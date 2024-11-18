@@ -1,0 +1,56 @@
+.contentDetailContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px; /* Add some margin around the container */
+}
+
+.mediaContainer {
+    width: 100%; /* Full width */
+    max-width: 600px; /* Adjust as necessary for your design */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.title {
+    text-align: center; /* Center title */
+    font-size: 24px;
+    margin-bottom: 10px; /* Space between title and media */
+}
+
+.media {
+    width: 100%; /* Make media responsive */
+    max-width: 100%; /* Ensure it doesn't exceed the container width */
+    height: auto; /* Maintain aspect ratio */
+}
+
+.detailsContainer {
+    width: 100%; /* Full width */
+    max-width: 800px; /* Wider than media section */
+    margin-top: 20px; /* Space between media and description */
+    padding: 10px; /* Add padding */
+}
+
+.description {
+    font-size: 16px; /* Adjust as necessary */
+    line-height: 1.5; /* Increase line spacing for readability */
+    -webkit-hyphens: auto; /* Safari compatibility */
+    hyphens: auto; /* Allow hyphenation for better text wrapping */
+    overflow-wrap: break-word; /* Break long words to prevent overflow */
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+    .title {
+        font-size: 20px; /* Smaller title on mobile */
+    }
+
+    .description {
+        font-size: 14px; /* Smaller description on mobile */
+    }
+
+    .mediaContainer, .detailsContainer {
+        max-width: 100%; /* Full width on mobile */
+    }
+}

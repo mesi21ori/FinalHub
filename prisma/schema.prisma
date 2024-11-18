@@ -1,0 +1,223 @@
+datasource db {
+  provider = "postgresql"
+
+  url = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              Int               @id @default(autoincrement())
+  profilePicture  String?
+  email           String            @unique
+  username        String            @unique
+  password        String
+  role            Role              @default(PUBLIC_USER)
+  institution     Institution?      @relation("UserInstitution", fields: [institutionId], references: [id])
+  institutionId   Int?
+  isActive        Boolean           @default(true)
+  subscription    UserSubscription? @relation("UserSubscription")
+  subscriptionId  Int?
+  isPlatformAdmin Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  // Relationships
+  uploadedContent Content[]         @relation("Uploader")
+  notifications   Notification[]
+  comments        Comment[]
+  accessRequests  AccessRequest[]   @relation("ReviewerAccessRequest")
+  commentReports  CommentReport[]
+  feedbacks       Feedback[]
+
+  // Relation to AccessRequest as Researcher
+  researchRequests AccessRequest[] @relation("ResearcherAccessRequest")
+
+  // Relation to Institution as an Admin
+  institutionAdmin Institution? @relation("InstitutionAdmin")
+}
+
+model AccessRequest {
+  id             Int           @id @default(autoincrement())
+  createdAt      DateTime      @default(now())
+  status         RequestStatus
+  userId         Int
+  contentId      Int
+  reviewerId     Int?
+  researcherFile String?
+  reason         String?
+  // Relationships
+  researcher     User          @relation("ResearcherAccessRequest", fields: [userId], references: [id])
+  content        Content       @relation(fields: [contentId], references: [id])
+  reviewer       User?         @relation("ReviewerAccessRequest", fields: [reviewerId], references: [id])
+}
+
+model Institution {
+  id                 Int                @id @default(autoincrement())
+  photo              String?
+  name               String
+  address            String
+  type               InstitutionType?
+  contactEmail       String
+  contactPhone       String
+  registrationStatus RegistrationStatus @default(PENDING)
+  admin              User?              @relation("InstitutionAdmin", fields: [adminId], references: [id])
+  adminId            Int?               @unique
+
+  // Relationships
+  users   User[]    @relation("UserInstitution")
+  content Content[]
+}
+
+model UserSubscription {
+  id        Int      @id @default(autoincrement())
+  startDate DateTime @default(now())
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+  userId    Int      @unique
+  planId    Int
+
+  // Relationships
+  user User             @relation("UserSubscription", fields: [userId], references: [id])
+  plan SubscriptionPlan @relation(fields: [planId], references: [id])
+}
+
+model Feedback {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  userId    Int
+  resolved  Boolean  @default(false)
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id])
+}
+
+model SubscriptionPlan {
+  id        Int          @id @default(autoincrement())
+  name      String
+  features  String[]
+  price     Float
+  duration  DurationType
+  createdAt DateTime     @default(now())
+
+  // Relationships
+  subscriptions UserSubscription[]
+}
+
+model Content {
+  id            Int             @id @default(autoincrement())
+  title         String
+  description   String
+  contentType   ContentType
+  fileUrl       String
+  metaData      Json
+  accessLevel   AccessLevel
+  uploaderId    Int
+  institution   Institution     @relation(fields: [institutionId], references: [id])
+  institutionId Int
+  viewOnly      Boolean         @default(true)
+  isFree        Boolean         @default(false)
+  category      HistoryCategory
+
+  uploader       User            @relation("Uploader", fields: [uploaderId], references: [id])
+  accessRequests AccessRequest[]
+  comments       Comment[]
+}
+
+model Comment {
+  id        Int             @id @default(autoincrement())
+  text      String
+  createdAt DateTime        @default(now())
+  userId    Int
+  contentId Int
+  parentId  Int? // No need for @default(null)
+  likes     Int             @default(0)
+  dislikes  Int             @default(0)
+  // Relationships
+  user      User            @relation(fields: [userId], references: [id])
+  content   Content         @relation(fields: [contentId], references: [id])
+  parent    Comment?        @relation("ReplyToComment", fields: [parentId], references: [id])
+  replies   Comment[]       @relation("ReplyToComment")
+  reports   CommentReport[]
+}
+
+model CommentReport {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  reason       String
+  resolved     Boolean  @default(false)
+  userNotified Boolean  @default(false)
+  commentId    Int
+  userId       Int
+
+  // Relationships
+  comment Comment @relation(fields: [commentId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+}
+
+enum DurationType {
+  DAILY
+  MONTHLY
+  YEARLY
+}
+
+enum Role {
+  PLATFORM_ADMIN
+  PREMIUM_USER
+  PUBLIC_USER
+  RESEARCHER_USER
+  INSTITUTION_ADMIN
+  UPLOADER
+  REVIEWER
+}
+
+enum RegistrationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ContentType {
+  VIDEO
+  BOOK
+  TEXT
+  MUSIC
+  PHOTO
+}
+
+enum AccessLevel {
+  PRIVATE
+  PUBLIC
+  RESTRICTED
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum HistoryCategory {
+  MODERN_HISTORY
+  MEDIEVAL_HISTORY
+  EARLY_HISTORY
+}
+
+enum InstitutionType {
+  MUSEUM
+  CHURCH
+  LIBRARY
+  SCHOOL
+  OTHER
+}

@@ -1,0 +1,27 @@
+
+  0. Close your internet connection.
+
+     * YOU DO NOT NEED TO UNINSTALL CS6 (If you have)
+    ** Installer will install both 32 and 64 bit applications by default.
+       If you want to use both, you should repeat the steps 5 and 6 
+       below for both.
+ 
+  1. Run "Illustrator_17_LS20.exe" it will ask to extract, agree. 
+
+  2. Install application from "Adobe Illustrator CC" folder by double 
+     clicking on the "Set-up.exe" (With admin rights on your system.)
+
+  3. Choose TRY install. Click on "Sign in" and "Sign in Later"
+
+  4. Select your language. (You can not change it after installation)
+
+  5. Open the application as trial (select "Sign in Later" again) and select
+     "Continue trial" and close.
+     (IMPORTANT : If you miss this step it may not be registered)
+
+  6. Copy "amtlib.dll" from "Activation" folder (x64 and/or x86) and paste it in to
+     installation folder by overwriting (replacing). It is generally ;
+  C:\Program Files\Adobe\Adobe Illustrator CC (64 Bit)\Support Files\Contents\Windows
+  - OR -
+  C:\Program Files (x86)\Adobe\Adobe Illustrator CC\Support Files\Contents\Windows
+  
