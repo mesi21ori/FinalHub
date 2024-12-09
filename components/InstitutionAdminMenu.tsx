@@ -16,7 +16,7 @@ const menuItems = [
   { path: "/institution/profile", icon: <FaUser />, label: "Profile" },
   { path: "/institution/addstaff", icon: <FaBell />, label: "Add Staff" },
   { path: "/institution/stafflist", icon: <FaList />, label: "List of Staff" },
-  { path: "/institution/institution-content", icon: <FaBuilding />, label: "List of Content" },
+  { path: "/institution/list", icon: <FaBuilding />, label: "List of Content" },
 ];
 
 const Layout: React.FC<LayoutProps> = ({ children, isEditMode, setIsEditMode }) => {

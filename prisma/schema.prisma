@@ -1,3 +1,475 @@
+// datasource db {
+//   provider = "postgresql"
+
+//   url = env("DATABASE_URL")
+// }
+
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+// model User {
+//   id              Int               @id @default(autoincrement())
+//   profilePicture  String?
+//   email           String            @unique
+//   username        String            @unique
+//   password        String
+//   role            Role              @default(PUBLIC_USER)
+//   institution     Institution?      @relation("UserInstitution", fields: [institutionId], references: [id])
+//   institutionId   Int?
+//   isActive        Boolean           @default(true)
+//   subscription    UserSubscription? @relation("UserSubscription")
+//   subscriptionId  Int?
+//   isPlatformAdmin Boolean           @default(false)
+//   createdAt       DateTime          @default(now())
+//   updatedAt       DateTime          @updatedAt
+//   // Relationships
+//   uploadedContent Content[]         @relation("Uploader")
+//   notifications   Notification[]
+//   comments        Comment[]
+//   accessRequests  AccessRequest[]   @relation("ReviewerAccessRequest")
+//   commentReports  CommentReport[]
+//   feedbacks       Feedback[]
+
+//   // Relation to AccessRequest as Researcher
+//   researchRequests AccessRequest[] @relation("ResearcherAccessRequest")
+
+//   // Relation to Institution as an Admin
+//   institutionAdmin Institution? @relation("InstitutionAdmin")
+// }
+
+// model AccessRequest {
+//   id             Int           @id @default(autoincrement())
+//   createdAt      DateTime      @default(now())
+//   status         RequestStatus
+//   userId         Int
+//   contentId      Int
+//   reviewerId     Int?
+//   researcherFile String?
+//   reason         String?
+//   // Relationships
+//   researcher     User          @relation("ResearcherAccessRequest", fields: [userId], references: [id])
+//   content        Content       @relation(fields: [contentId], references: [id])
+//   reviewer       User?         @relation("ReviewerAccessRequest", fields: [reviewerId], references: [id])
+// }
+
+// model Institution {
+//   id                 Int                @id @default(autoincrement())
+//   photo              String?
+//   name               String
+//   address            String
+//   type               InstitutionType?
+//   contactEmail       String
+//   contactPhone       String
+//   registrationStatus RegistrationStatus @default(PENDING)
+//   admin              User?              @relation("InstitutionAdmin", fields: [adminId], references: [id])
+//   adminId            Int?               @unique
+
+//   // Relationships
+//   users   User[]    @relation("UserInstitution")
+//   content Content[]
+// }
+
+// model UserSubscription {
+//   id        Int      @id @default(autoincrement())
+//   startDate DateTime @default(now())
+//   endDate   DateTime
+//   isActive  Boolean  @default(true)
+//   userId    Int      @unique
+//   planId    Int
+//   transactionId String   @unique
+//   // Relationships
+//   user User             @relation("UserSubscription", fields: [userId], references: [id])
+//   plan SubscriptionPlan @relation(fields: [planId], references: [id])
+// }
+
+// model Feedback {
+//   id        Int      @id @default(autoincrement())
+//   content   String
+//   createdAt DateTime @default(now())
+//   userId    Int
+//   resolved  Boolean  @default(false)
+
+//   // Relationships
+//   user User @relation(fields: [userId], references: [id])
+// }
+
+// model SubscriptionPlan {
+//   id        Int          @id @default(autoincrement())
+//   name      String
+//   features  String[]
+//   price     Float
+//   duration  DurationType
+//   createdAt DateTime     @default(now())
+
+//   // Relationships
+//   subscriptions UserSubscription[]
+// }
+
+// model Content {
+//   id            Int             @id @default(autoincrement())
+//   title         String
+//   description   String
+//   contentType   ContentType
+//   fileUrl       String
+//   metaData      Json
+//   accessLevel   AccessLevel
+//   uploaderId    Int
+//   institution   Institution     @relation(fields: [institutionId], references: [id])
+//   institutionId Int
+//   viewOnly      Boolean         @default(true)
+//   isFree        Boolean         @default(false)
+//   category      HistoryCategory
+
+//   uploader       User            @relation("Uploader", fields: [uploaderId], references: [id])
+//   accessRequests AccessRequest[]
+//   comments       Comment[]
+// }
+
+// model Comment {
+//   id        Int             @id @default(autoincrement())
+//   text      String
+//   createdAt DateTime        @default(now())
+//   userId    Int
+//   contentId Int
+//   parentId  Int? // No need for @default(null)
+//   likes     Int             @default(0)
+//   dislikes  Int             @default(0)
+//   // Relationships
+//   user      User            @relation(fields: [userId], references: [id])
+//   content   Content         @relation(fields: [contentId], references: [id])
+//   parent    Comment?        @relation("ReplyToComment", fields: [parentId], references: [id])
+//   replies   Comment[]       @relation("ReplyToComment")
+//   reports   CommentReport[]
+// }
+
+// model CommentReport {
+//   id           Int      @id @default(autoincrement())
+//   createdAt    DateTime @default(now())
+//   reason       String
+//   resolved     Boolean  @default(false)
+//   userNotified Boolean  @default(false)
+//   commentId    Int
+//   userId       Int
+
+//   // Relationships
+//   comment Comment @relation(fields: [commentId], references: [id])
+//   user    User    @relation(fields: [userId], references: [id])
+// }
+
+// model Notification {
+//   id        Int      @id @default(autoincrement())
+//   message   String
+//   isRead    Boolean  @default(false)
+//   createdAt DateTime @default(now())
+//   user      User     @relation(fields: [userId], references: [id])
+//   userId    Int
+// }
+
+// enum DurationType {
+//   DAILY
+//   MONTHLY
+//   YEARLY
+// }
+
+// enum Role {
+//   PLATFORM_ADMIN
+//   PREMIUM_USER
+//   PUBLIC_USER
+//   RESEARCHER_USER
+//   INSTITUTION_ADMIN
+//   UPLOADER
+//   REVIEWER
+// }
+
+// enum RegistrationStatus {
+//   PENDING
+//   APPROVED
+//   REJECTED
+// }
+
+// enum ContentType {
+//   VIDEO
+//   BOOK
+//   TEXT
+//   MUSIC
+//   PHOTO
+// }
+
+// enum AccessLevel {
+//   PRIVATE
+//   PUBLIC
+//   RESTRICTED
+// }
+
+// enum RequestStatus {
+//   PENDING
+//   APPROVED
+//   REJECTED
+// }
+
+// enum HistoryCategory {
+//   MODERN_HISTORY
+//   MEDIEVAL_HISTORY
+//   EARLY_HISTORY
+// }
+
+// enum InstitutionType {
+//   MUSEUM
+//   CHURCH
+//   LIBRARY
+//   SCHOOL
+//   OTHER
+// }
+
+// datasource db {
+//   provider = "postgresql"
+
+//   url = env("DATABASE_URL")
+// }
+
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+// model User {
+//   id              Int                @id @default(autoincrement())
+//   profilePicture  String?
+//   email           String             @unique
+//   username        String             @unique
+//   password        String
+//   role            Role               @default(PUBLIC_USER)
+//   institution     Institution?       @relation("UserInstitution", fields: [institutionId], references: [id])
+//   institutionId   Int?
+//   isActive        Boolean            @default(true)
+//   subscription    UserSubscription[] @relation("UserSubscription") // Notice the plural here
+//   isPlatformAdmin Boolean            @default(false)
+//   createdAt       DateTime           @default(now())
+//   updatedAt       DateTime           @updatedAt
+//   // Relationships
+//   uploadedContent Content[]          @relation("Uploader")
+//   notifications   Notification[]
+//   comments        Comment[]
+//   accessRequests  AccessRequest[]    @relation("ReviewerAccessRequest")
+//   commentReports  CommentReport[]
+//   feedbacks       Feedback[]
+
+//   // Relation to AccessRequest as Researcher
+//   researchRequests AccessRequest[] @relation("ResearcherAccessRequest")
+
+//   // Relation to Institution as an Admin
+//   institutionAdmin Institution? @relation("InstitutionAdmin")
+
+//   preferences Json? // Storing preference IDs as JSON array
+// }
+
+// model Preference {
+//   id   Int    @id @default(autoincrement())
+//   name String @unique
+// }
+
+// model UserSubscription {
+//   id            Int              @id @default(autoincrement())
+//   startDate     DateTime         @default(now())
+//   endDate       DateTime
+//   isActive      Boolean          @default(true)
+//   userId        Int
+//   planId        Int
+//   transactionId String           @unique
+//   // Relationships
+//   user          User             @relation("UserSubscription", fields: [userId], references: [id])
+//   plan          SubscriptionPlan @relation(fields: [planId], references: [id])
+
+//   // This will enforce that only one active subscription exists per user.
+//   // @@unique([userId, isActive]) 
+// }
+
+// model SubscriptionPlan {
+//   id        Int          @id @default(autoincrement())
+//   name      String
+//   features  String[]
+//   price     Float
+//   duration  DurationType
+//   createdAt DateTime     @default(now())
+
+//   // Relationships
+//   subscriptions UserSubscription[]
+// }
+
+// model AccessRequest {
+//   id             Int           @id @default(autoincrement())
+//   createdAt      DateTime      @default(now())
+//   status         RequestStatus
+//   userId         Int
+//   contentId      Int
+//   reviewerId     Int?
+//   researcherFile String?
+//   reason         String?
+//   // Relationships
+//   researcher     User          @relation("ResearcherAccessRequest", fields: [userId], references: [id])
+//   content        Content       @relation(fields: [contentId], references: [id])
+//   reviewer       User?         @relation("ReviewerAccessRequest", fields: [reviewerId], references: [id])
+// }
+
+// model Institution {
+//   id                 Int                @id @default(autoincrement())
+//   photo              String?
+//   name               String
+//   address            String
+//   type               InstitutionType?
+//   contactEmail       String
+//   contactPhone       String
+//   registrationStatus RegistrationStatus @default(PENDING)
+//   admin              User?              @relation("InstitutionAdmin", fields: [adminId], references: [id])
+//   adminId            Int?               @unique
+
+//   // Relationships
+//   users   User[]    @relation("UserInstitution")
+//   content Content[]
+// }
+
+// model Feedback {
+//   id        Int      @id @default(autoincrement())
+//   content   String
+//   createdAt DateTime @default(now())
+//   userId    Int
+//   resolved  Boolean  @default(false)
+
+//   // Relationships
+//   user User @relation(fields: [userId], references: [id])
+// }
+
+// model Content {
+//   id            Int             @id @default(autoincrement())
+//   title         String
+//   description   String
+//   contentType   ContentType
+//   fileUrl       String
+//   metaData      Json
+//   accessLevel   AccessLevel
+//   uploaderId    Int
+//   institution   Institution     @relation(fields: [institutionId], references: [id])
+//   institutionId Int
+//   viewOnly      Boolean         @default(true)
+//   isFree        Boolean         @default(false)
+//   category      HistoryCategory
+
+//   uploader       User            @relation("Uploader", fields: [uploaderId], references: [id])
+//   accessRequests AccessRequest[]
+//   comments       Comment[]
+// }
+
+// model Comment {
+//   id        Int             @id @default(autoincrement())
+//   text      String
+//   createdAt DateTime        @default(now())
+//   userId    Int
+//   contentId Int
+//   parentId  Int? // No need for @default(null)
+//   likes     Int             @default(0)
+//   dislikes  Int             @default(0)
+//   // Relationships
+//   user      User            @relation(fields: [userId], references: [id])
+//   content   Content         @relation(fields: [contentId], references: [id])
+//   parent    Comment?        @relation("ReplyToComment", fields: [parentId], references: [id])
+//   replies   Comment[]       @relation("ReplyToComment")
+//   reports   CommentReport[]
+// }
+
+// model CommentReport {
+//   id                Int      @id @default(autoincrement())
+//   createdAt         DateTime @default(now())
+//   reason            String
+//   resolved          Boolean  @default(false)
+//   userNotified      Boolean  @default(false)
+//   commentId         Int
+//   userId            Int
+//   additionalDetails String?
+//   // Relationships
+//   comment           Comment  @relation(fields: [commentId], references: [id])
+//   user              User     @relation(fields: [userId], references: [id])
+// }
+
+// model Notification {
+//   id        Int      @id @default(autoincrement())
+//   message   String
+//   isRead    Boolean  @default(false)
+//   createdAt DateTime @default(now())
+//   user      User     @relation(fields: [userId], references: [id])
+//   userId    Int
+// }
+
+// enum DurationType {
+//   DAILY
+//   MONTHLY
+//   YEARLY
+// }
+
+// enum Role {
+//   PLATFORM_ADMIN
+//   PREMIUM_USER
+//   PUBLIC_USER
+//   RESEARCHER_USER
+//   INSTITUTION_ADMIN
+//   UPLOADER
+//   REVIEWER
+// }
+
+// enum RegistrationStatus {
+//   PENDING
+//   APPROVED
+//   REJECTED
+// }
+
+// enum ContentType {
+//   VIDEO
+//   BOOK
+//   TEXT
+//   MUSIC
+//   PHOTO
+// }
+
+// enum AccessLevel {
+//   PRIVATE
+//   PUBLIC
+//   RESTRICTED
+// }
+
+// enum RequestStatus {
+//   PENDING
+//   APPROVED
+//   REJECTED
+// }
+
+// enum HistoryCategory {
+//   MODERN_HISTORY
+//   MEDIEVAL_HISTORY
+//   ANCIENT_HISTORY
+//   ECONOMIC_HISTORY
+//   POLITICAL_HISTORY
+//   ETHIOPIAN_REVOLUTION
+//   ETHIOPIAN_NATIONALISM
+//   ETHIOPIAN_LITERATURE
+// }
+
+// enum InstitutionType {
+//   MUSEUM
+//   CHURCH
+//   LIBRARY
+//   SCHOOL
+//   OTHER
+// }
+
+// enum ReportReason {
+//   HARASSMENT
+//   HATE_SPEECH
+//   SPAM
+//   VIOLENCE
+//   Other
+// }
+
+// before editing contnet 
+
 datasource db {
   provider = "postgresql"
 
@@ -8,34 +480,93 @@ generator client {
   provider = "prisma-client-js"
 }
 
+
+
 model User {
-  id              Int               @id @default(autoincrement())
+  id              Int        @id @default(autoincrement())
   profilePicture  String?
-  email           String            @unique
-  username        String            @unique
+  email           String     @unique
+  firstName       String?
+  lastName        String?
+  gender          GenderType? // Assuming `GenderType` is an enum
+  dateOfBirth     DateTime?
+  phoneNumber     String?
+  username        String     @unique
   password        String
-  role            Role              @default(PUBLIC_USER)
-  institution     Institution?      @relation("UserInstitution", fields: [institutionId], references: [id])
-  institutionId   Int?
-  isActive        Boolean           @default(true)
-  subscription    UserSubscription? @relation("UserSubscription")
-  subscriptionId  Int?
-  isPlatformAdmin Boolean           @default(false)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  // Relationships
-  uploadedContent Content[]         @relation("Uploader")
+  role            Role       @default(PUBLIC_USER)
+  isActive        Boolean    @default(true)
+  isPlatformAdmin Boolean    @default(false)
+  preferences     Json? // Storing preference IDs as JSON array
+
+  // Relations
+  institution      Institution? @relation("UserInstitution", fields: [institutionId], references: [id])
+  institutionId    Int?
+  institutionAdmin Institution? @relation("InstitutionAdmin")
+
+  // Subscription relationships
+  subscription UserSubscription[] @relation("UserSubscription")
+
+  // Content relationships
+  uploadedContent Content[]       @relation("Uploader")
   notifications   Notification[]
   comments        Comment[]
-  accessRequests  AccessRequest[]   @relation("ReviewerAccessRequest")
+  accessRequests  AccessRequest[] @relation("ReviewerAccessRequest")
   commentReports  CommentReport[]
   feedbacks       Feedback[]
 
-  // Relation to AccessRequest as Researcher
+  // Researcher access requests
   researchRequests AccessRequest[] @relation("ResearcherAccessRequest")
 
-  // Relation to Institution as an Admin
-  institutionAdmin Institution? @relation("InstitutionAdmin")
+  // Uploads by type
+  bookUploads     HistoricalBook[]    @relation("BookUploader")
+  videoUploads    HistoricalVideo[]   @relation("VideoUploader")
+  musicUploads    HistoricalMusic[]   @relation("MusicUploader")
+  artifactUploads HistoricalPhoto[]   @relation("PhotoUploader")
+  articleUploads  HistoricalArticle[] @relation("ArticleUploader")
+
+  // Edits by type
+  bookEdits     HistoricalBook[]    @relation("BookLastEditor")
+  videoEdits    HistoricalVideo[]   @relation("VideoLastEditor")
+  musicEdits    HistoricalMusic[]   @relation("MusicLastEditor")
+  artifactEdits HistoricalPhoto[]   @relation("PhotoLastEditor")
+  articleEdits  HistoricalArticle[] @relation("ArticleLastEditor")
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Preference {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+}
+
+model UserSubscription {
+  id            Int              @id @default(autoincrement())
+  startDate     DateTime         @default(now())
+  endDate       DateTime
+  isActive      Boolean          @default(true)
+  userId        Int
+  planId        Int
+  transactionId String           @unique
+  // Relationships
+  user          User             @relation("UserSubscription", fields: [userId], references: [id])
+  plan          SubscriptionPlan @relation(fields: [planId], references: [id])
+
+  // This will enforce that only one active subscription exists per user.
+  // @@unique([userId, isActive]) 
+}
+
+model SubscriptionPlan {
+  id        Int          @id @default(autoincrement())
+  name      String
+  features  String[]
+  price     Float
+  duration  DurationType
+  createdAt DateTime     @default(now())
+
+  // Relationships
+  subscriptions UserSubscription[]
 }
 
 model AccessRequest {
@@ -54,35 +585,30 @@ model AccessRequest {
 }
 
 model Institution {
-  id                 Int                @id @default(autoincrement())
-  photo              String?
-  name               String
-  address            String
-  type               InstitutionType?
-  contactEmail       String
-  contactPhone       String
-  registrationStatus RegistrationStatus @default(PENDING)
-  admin              User?              @relation("InstitutionAdmin", fields: [adminId], references: [id])
-  adminId            Int?               @unique
+  id                   Int                @id @default(autoincrement())
+  registrationNumber   String             @unique
+  name                 String
+  address              Json  // consist 4 thing   
+  website              String?
+  emailDomain          String?
+  collaborationPurpose String?
+  establishDate        DateTime
+  numberOfEmploy       Int
+  document             String?
+  photo                String?
+  type                 InstitutionType?
+  Phone         String
+  registrationStatus   RegistrationStatus   @default(PENDING)
 
-  // Relationships
-  users   User[]    @relation("UserInstitution")
-  content Content[]
+  admin               User?                @relation("InstitutionAdmin", fields: [adminId], references: [id])
+  adminId             Int?                 @unique
+
+  users               User[]               @relation("UserInstitution")
+  content             Content[]
+
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
 }
-
-model UserSubscription {
-  id        Int      @id @default(autoincrement())
-  startDate DateTime @default(now())
-  endDate   DateTime
-  isActive  Boolean  @default(true)
-  userId    Int      @unique
-  planId    Int
-
-  // Relationships
-  user User             @relation("UserSubscription", fields: [userId], references: [id])
-  plan SubscriptionPlan @relation(fields: [planId], references: [id])
-}
-
 model Feedback {
   id        Int      @id @default(autoincrement())
   content   String
@@ -94,36 +620,232 @@ model Feedback {
   user User @relation(fields: [userId], references: [id])
 }
 
-model SubscriptionPlan {
-  id        Int          @id @default(autoincrement())
-  name      String
-  features  String[]
-  price     Float
-  duration  DurationType
-  createdAt DateTime     @default(now())
-
-  // Relationships
-  subscriptions UserSubscription[]
-}
 
 model Content {
   id            Int             @id @default(autoincrement())
   title         String
   description   String
   contentType   ContentType
-  fileUrl       String
-  metaData      Json
+  fileUrl       String?
   accessLevel   AccessLevel
   uploaderId    Int
-  institution   Institution     @relation(fields: [institutionId], references: [id])
   institutionId Int
   viewOnly      Boolean         @default(true)
   isFree        Boolean         @default(false)
   category      HistoryCategory
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @default(now())
 
+  // Relationships
   uploader       User            @relation("Uploader", fields: [uploaderId], references: [id])
+  institution    Institution     @relation(fields: [institutionId], references: [id])
   accessRequests AccessRequest[]
   comments       Comment[]
+
+  // Content-specific details (relations to specific models)
+  bookDetails     HistoricalBook?  @relation("BookContentRelation", fields: [bookDetailsId], references: [id])
+  videoDetails    HistoricalVideo?   @relation("VideoContentRelation", fields: [videoDetailsId], references: [id])
+  musicDetails    HistoricalMusic?   @relation("MusicContentRelation", fields: [musicDetailsId], references: [id])
+  artifactDetails HistoricalPhoto?   @relation("ArtifactContentRelation", fields: [artifactDetailsId], references: [id])
+  articleDetails  HistoricalArticle? @relation("ArticleContentRelation", fields: [articleDetailsId], references: [id])
+
+  // Unique identifiers for each specific content type
+  bookDetailsId     Int? @unique
+  videoDetailsId    Int? @unique
+  musicDetailsId    Int? @unique
+  artifactDetailsId Int? @unique
+  articleDetailsId  Int? @unique
+}
+
+model HistoricalVideo {
+  id                 Int       @id @default(autoincrement())
+  publisher          String
+  copyrightHolder    String?
+  language           String
+  subtitles          String[]
+  duration           String?
+  publicationDate    DateTime
+  preservationStatus String?
+  primarySource      Boolean?
+  eventDate          DateTime?
+  location           String?
+  eventType          String?
+  significance       String?
+  historicalFigures  String[]
+  director           String?
+  producer           String?
+  cameramen          String[]
+  cinematographer    String?
+  cast               String[]
+  relatedArtifacts   String[]
+  ageRating          String?
+  numberOfViews      Int
+  numberOfLikes      Int
+  numberOfComments   Int
+  coverImage         String?
+
+  uploadedBy   Int
+  uploadDate   DateTime  @default(now())
+  lastEditBy   Int?
+  lastEditDate DateTime?
+
+  uploader       User     @relation("VideoUploader", fields: [uploadedBy], references: [id])
+  lastEditor     User?    @relation("VideoLastEditor", fields: [lastEditBy], references: [id])
+  contentDetails Content? @relation("VideoContentRelation")
+
+  @@index([uploadedBy])
+}
+
+model HistoricalBook {
+  id                 Int       @id @default(autoincrement())
+  alternativeTitle   String?
+  coverImage         String?
+  subtitle           String[]
+ // bookUrl            String
+  author             String
+  coAuthors          String[]
+  editor             String[]
+  numberOfPages      String?
+  edition            String?
+  bookType           String?
+  series             String?
+  seriesNumber       String?
+  publisher          String?
+  publicationDate    DateTime?
+  copyrightHolder    String?
+  eventDate          DateTime?
+  location           String?
+  eventType          String?
+  significance       String?
+  historicalFigures  String[]
+  preservationStatus String?
+  primarySource      Boolean?
+  language           String?
+  numberOfViews      Int
+  numberOfLikes      Int
+  numberOfComments   Int
+  uploadedBy         Int
+  uploadDate         DateTime  @default(now())
+  lastEditBy         Int?
+  lastEditDate       DateTime?
+
+  // Relationships
+  uploader       User     @relation("BookUploader", fields: [uploadedBy], references: [id])
+  lastEditor     User?    @relation("BookLastEditor", fields: [lastEditBy], references: [id])
+  contentDetails Content? @relation("BookContentRelation")
+
+  @@index([uploadedBy])
+}
+model HistoricalMusic {
+  id                 Int       @id @default(autoincrement())
+
+  alternativeTitle   String?
+  coverImage         String?
+  albumImage         String?
+  subtitle           String[]
+  composer           String?
+  duration           String?
+  musicProducer      String?
+  musicType          String?
+  singer             String?
+  additionalSinger   String[]
+  melodyAuthor       String?
+  poemAuthor         String?
+  instrument         String[]
+  instrumentPlayer   String[]
+  musicAlbum         String?
+  musicNumber        String?
+  recorder           String?
+  eventDate          DateTime?
+  location           String?
+  eventType          String?
+  significance       String?
+  historicalFigures  String[]
+  preservationStatus String?
+  primarySource      Boolean?
+  publisher          String
+  publicationDate    DateTime
+  copyrightHolder    String?
+  language           String
+  numberOfViews      Int
+  numberOfLikes      Int
+  numberOfComments   Int
+  uploadedBy         Int
+  uploadDate         DateTime  @default(now())
+  lastEditBy         Int?
+  lastEditDate       DateTime?
+
+  // Relationships
+  uploader       User     @relation("MusicUploader", fields: [uploadedBy], references: [id])
+  lastEditor     User?    @relation("MusicLastEditor", fields: [lastEditBy], references: [id])
+  contentDetails Content? @relation("MusicContentRelation")
+
+  @@index([uploadedBy])
+}
+
+model HistoricalPhoto {
+  id               Int       @id @default(autoincrement())
+  coverImage       String?
+  tags             String[]
+  eventDate        DateTime?
+  photographer     String?
+  photos           String[] // Assuming these are URLs or paths to photo images
+ // imageUrl         String
+  format           String?
+  photoLocation    String?
+  capturedDate     DateTime?
+  eventType         String?
+  significance      String?
+  historicalFigures String[]
+  primarySource     Boolean?
+  numberOfViews    Int
+  numberOfLikes    Int
+  numberOfComments Int
+  lastEditBy       Int?
+  lastEditDate     DateTime?
+
+  // Relationships
+  uploader       User     @relation("PhotoUploader", fields: [uploadedBy], references: [id])
+  lastEditor     User?    @relation("PhotoLastEditor", fields: [lastEditBy], references: [id])
+  contentDetails Content? @relation("ArtifactContentRelation")
+
+  uploadedBy Int
+  uploadDate DateTime @default(now())
+
+  @@index([uploadedBy])
+}
+
+model HistoricalArticle {
+  id                Int       @id @default(autoincrement())
+  alternativeTitle  String?
+  coverImage        String?
+  //ArticleUrl        String
+  language          String
+  author            String
+  coAuthors         String[]
+  editor            String[]
+  publisher         String
+  publicationDate   DateTime
+  eventDate         DateTime?
+  location          String?
+  eventType         String?
+  significance      String?
+  historicalFigures String[]
+  primarySource     Boolean?
+  numberOfViews     Int?
+  numberOfLikes     Int?
+  numberOfComments  Int?
+  uploadedBy        Int
+  uploadDate        DateTime  @default(now())
+  lastEditBy        Int?
+  lastEditDate      DateTime?
+
+  // Relationships
+  uploader       User     @relation("ArticleUploader", fields: [uploadedBy], references: [id])
+  lastEditor     User?    @relation("ArticleLastEditor", fields: [lastEditBy], references: [id])
+  contentDetails Content? @relation("ArticleContentRelation")
+
+  @@index([uploadedBy])
 }
 
 model Comment {
@@ -144,17 +866,17 @@ model Comment {
 }
 
 model CommentReport {
-  id           Int      @id @default(autoincrement())
-  createdAt    DateTime @default(now())
-  reason       String
-  resolved     Boolean  @default(false)
-  userNotified Boolean  @default(false)
-  commentId    Int
-  userId       Int
-
+  id                Int      @id @default(autoincrement())
+  createdAt         DateTime @default(now())
+  reason            String
+  resolved          Boolean  @default(false)
+  userNotified      Boolean  @default(false)
+  commentId         Int
+  userId            Int
+  additionalDetails String?
   // Relationships
-  comment Comment @relation(fields: [commentId], references: [id])
-  user    User    @relation(fields: [userId], references: [id])
+  comment           Comment  @relation(fields: [commentId], references: [id])
+  user              User     @relation(fields: [userId], references: [id])
 }
 
 model Notification {
@@ -170,6 +892,11 @@ enum DurationType {
   DAILY
   MONTHLY
   YEARLY
+}
+
+enum GenderType {
+  FEMALE
+  MALE
 }
 
 enum Role {
@@ -191,9 +918,9 @@ enum RegistrationStatus {
 enum ContentType {
   VIDEO
   BOOK
-  TEXT
+  ARTICLE
   MUSIC
-  PHOTO
+  ARTIFACT
 }
 
 enum AccessLevel {
@@ -211,7 +938,12 @@ enum RequestStatus {
 enum HistoryCategory {
   MODERN_HISTORY
   MEDIEVAL_HISTORY
-  EARLY_HISTORY
+  ANCIENT_HISTORY
+  ECONOMIC_HISTORY
+  POLITICAL_HISTORY
+  ETHIOPIAN_REVOLUTION
+  ETHIOPIAN_NATIONALISM
+  ETHIOPIAN_LITERATURE
 }
 
 enum InstitutionType {
@@ -220,4 +952,12 @@ enum InstitutionType {
   LIBRARY
   SCHOOL
   OTHER
+}
+
+enum ReportReason {
+  HARASSMENT
+  HATE_SPEECH
+  SPAM
+  VIOLENCE
+  Other
 }

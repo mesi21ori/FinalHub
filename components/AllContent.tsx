@@ -138,28 +138,89 @@ const AllContent = () => {
         );
     };
 
+    // const handleMoreDetails = async (content: Content) => {
+    //     const userRole = localStorage.getItem('userRole');
+    //     const userId = localStorage.getItem('userId');
+
+    //     if (!userId || !userRole) {
+    //         alert("User is not authenticated.");
+    //         return;
+    //     }
+
+    //     if (content.accessLevel.toLowerCase() === 'public') {
+    //         router.push(`/content/${content.id}`);
+    //     } else if (content.accessLevel.toLowerCase() === 'private') {
+    //         router.push('/upgrade');
+    //     } else if (content.accessLevel.toLowerCase() === 'restricted') {
+    //         try {
+    //             const response = await axios.get(`/api/users/check-request-status`, {
+    //                 params: { userId: userId, contentId: content.id }
+    //             });
+
+    //             console.log('API Response:', response.data);  // Log to check
+    //             const requestStatus = response.data.status.toLowerCase(); // Normalize case
+
+    //             switch (requestStatus) {
+    //                 case 'pending':
+    //                     alert("Your request is still pending. Please wait for approval.");
+    //                     break;
+    //                 case 'rejected':
+    //                     alert("Your request was rejected. Please add more details and submit again.");
+    //                     router.push(`/RequestAccess?contentId=${content.id}`);
+    //                     break;
+    //                 case 'approved':
+    //                     router.push(`/content/${content.id}`);
+    //                     break;
+    //                 case 'none':
+    //                     router.push(`/RequestAccess?contentId=${content.id}`);
+    //                     break;
+    //                 default:
+    //                     alert("Unknown request status.");
+    //             }
+    //         } catch (error) {
+    //             console.error("Error checking request status:", error);
+    //             alert("Error checking request status.");
+    //         }
+    //     } else {
+    //         console.warn('Unknown access level:', content.accessLevel);
+    //     }
+    // };
     const handleMoreDetails = async (content: Content) => {
         const userRole = localStorage.getItem('userRole');
         const userId = localStorage.getItem('userId');
-
+    
         if (!userId || !userRole) {
             alert("User is not authenticated.");
             return;
         }
-
-        if (content.accessLevel.toLowerCase() === 'public') {
-            router.push(`/content/${content.id}`);
-        } else if (content.accessLevel.toLowerCase() === 'private') {
-            router.push('/upgrade');
-        } else if (content.accessLevel.toLowerCase() === 'restricted') {
-            try {
-                const response = await axios.get(`/api/users/check-request-status`, {
-                    params: { userId: userId, contentId: content.id }
+    
+        try {
+            if (content.accessLevel.toLowerCase() === 'public') {
+                // Public content is directly accessible
+                router.push(`/content/${content.id}`);
+            } else if (content.accessLevel.toLowerCase() === 'private') {
+                // Check for active subscription
+                const response = await axios.get(`/api/users/check-subscription`, {
+                    params: { userId },
                 });
-
-                console.log('API Response:', response.data);  // Log to check
-                const requestStatus = response.data.status.toLowerCase(); // Normalize case
-
+    
+                if (response.data.hasActiveSubscription) {
+                    // User has an active subscription, proceed to content
+                    router.push(`/content/${content.id}`);
+                } else {
+                    // User doesn't have a subscription, redirect to upgrade
+             
+                    router.push('/upgrade');
+                }
+            } else if (content.accessLevel.toLowerCase() === 'restricted') {
+                // Existing restricted content logic
+                const response = await axios.get(`/api/users/check-request-status`, {
+                    params: { userId: userId, contentId: content.id },
+                });
+    
+                console.log('API Response:', response.data);
+                const requestStatus = response.data.status.toLowerCase();
+    
                 switch (requestStatus) {
                     case 'pending':
                         alert("Your request is still pending. Please wait for approval.");
@@ -177,15 +238,15 @@ const AllContent = () => {
                     default:
                         alert("Unknown request status.");
                 }
-            } catch (error) {
-                console.error("Error checking request status:", error);
-                alert("Error checking request status.");
+            } else {
+                console.warn('Unknown access level:', content.accessLevel);
             }
-        } else {
-            console.warn('Unknown access level:', content.accessLevel);
+        } catch (error) {
+            console.error("Error processing request:", error);
+            alert("An error occurred while processing your request.");
         }
     };
-
+    
 
     return (
         <div className="min-h-screen bg-[#E5E5CB] pt-16">

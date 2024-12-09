@@ -7,8 +7,8 @@ interface Institution {
   name: string;
   address: string;
   type?: string; 
-  contactEmail: string;
-  contactPhone: string;
+  emailDomain: string;
+  Phone: string;
   registrationStatus: string; 
 }
 
@@ -81,8 +81,8 @@ const InstitutionList: React.FC = () => {
               <td>{institution.name}</td>
               <td>{institution.address}</td>
               <td>{institution.type}</td>
-              <td>{institution.contactEmail}</td>
-              <td>{institution.contactPhone}</td>
+              <td>{institution.emailDomain}</td>
+              <td>{institution.Phone}</td>
               <td>{institution.registrationStatus}</td>
             </tr>
           ))}

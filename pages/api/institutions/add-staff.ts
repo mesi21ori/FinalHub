@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  const { username, email, role, password, institutionId } = req.body;
+  const {firstName ,lastName , gender,phoneNumber,username, email, role, password, institutionId } = req.body;
 
   try {
     // Validate input
@@ -52,6 +52,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Create the new staff member
     const staff = await prisma.user.create({
       data: {
+        firstName,
+        lastName, 
+        gender,
+        phoneNumber,
         username,
         email,
         role,

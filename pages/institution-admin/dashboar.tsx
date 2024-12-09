@@ -10,8 +10,8 @@ interface Institution {
     name: string;
     address: string;
     type?: string | null;
-    contactEmail: string;
-    contactPhone: string;
+    emailDomain: string;
+    Phone: string;
     registrationStatus: string;
     admin: {
         id: number;
@@ -86,8 +86,8 @@ const InstitutionDetails: React.FC = () => {
                 name: institution?.name,
                 address: institution?.address,
                 type: institution?.type,
-                contactEmail: institution?.contactEmail,
-                contactPhone: institution?.contactPhone,
+                contactEmail: institution?.emailDomain,
+                contactPhone: institution?.Phone,
                 registrationStatus: institution?.registrationStatus,
                 adminUsername: adminUsername, // Update admin username
                 adminPassword: adminPassword, // Update admin password
@@ -258,13 +258,13 @@ const InstitutionDetails: React.FC = () => {
                             type="email"
                             id="contactEmail"
                             name="contactEmail"
-                            value={institution.contactEmail}
+                            value={institution.emailDomain}
                             onChange={handleChange}
                             className="mt-0.5 block w-56 p-1 bg-transparent border border-[#3C2A21] rounded-md focus:outline-none focus:ring focus:ring-[#3C2A21]"
                             placeholder="Enter contact email"
                         />
                     ) : (
-                        <span className="ml-2">{institution.contactEmail}</span>
+                        <span className="ml-2">{institution.emailDomain}</span>
                     )}
                 </div>
 
@@ -275,13 +275,13 @@ const InstitutionDetails: React.FC = () => {
                             type="text"
                             id="contactPhone"
                             name="contactPhone"
-                            value={institution.contactPhone}
+                            value={institution.Phone}
                             onChange={handleChange}
                             className="mt-0.5 block w-56 p-1 bg-transparent border border-[#3C2A21] rounded-md focus:outline-none focus:ring focus:ring-[#3C2A21]"
                             placeholder="Enter contact phone"
                         />
                     ) : (
-                        <span className="ml-2">{institution.contactPhone}</span>
+                        <span className="ml-2">{institution.Phone}</span>
                     )}
                 </div>
 

@@ -34,9 +34,9 @@ export function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL('/unauthorized', req.url));
     }
 
-    if (pathname.startsWith('/content') && decoded.role !== 'PUBLIC_USER') {
+    if (pathname.startsWith('/content') && decoded.role !== 'PUBLIC_USER' && decoded.role !== 'PREMIUM_USER') {
       return NextResponse.redirect(new URL('/unauthorized', req.url));
-    }
+  }  
 
   } catch (error) {
     console.error('JWT Error:', error); 

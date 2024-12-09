@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       select: {
         id: true,
         name: true,
-        contactEmail: true,
+        emailDomain: true,
       },
     });
 
@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const formattedNotifications = notifications.map((institution) => ({
       id: institution.id,
       institutionId: institution.id,
-      message: `Institution ${institution.name} (${institution.contactEmail}) is pending.`,
+      message: `Institution ${institution.name} (${institution.emailDomain}) is pending.`,
     }));
 
     res.status(200).json(formattedNotifications);

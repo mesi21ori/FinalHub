@@ -112,7 +112,7 @@ export default function HomePage() {
           <button
             onClick={() => router.push("/institution-admin/multislider")}
 className="relative bg-[#3e251c] text-white py-3 px-10 rounded-full overflow-hidden">
-            <span className="relative z-10">Request for Apply</span>
+            <span className="relative z-10">Request for Collaboration</span>
             <span className="absolute -right-4 -bottom-4 bg-[#FFFFE9] h-12 w-12 rounded-full"></span>
           </button>
         </div>

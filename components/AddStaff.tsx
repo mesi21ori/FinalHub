@@ -8,6 +8,8 @@ export default function AddStaff() {
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [gender, setgender] = useState('MALE');
+  const [phoneNumber, setphoneNumber] = useState('');
   const [role, setRole] = useState('UPLOADER');
   const [password, setPassword] = useState('');
   const [institutionId, setInstitutionId] = useState<number | null>(null);
@@ -35,7 +37,11 @@ export default function AddStaff() {
 
     try {
       const response = await axios.post('/api/institutions/add-staff', {
+        firstName,
         username,
+        lastName,
+        gender,
+        phoneNumber,
         email,
         role,
         password,
@@ -59,6 +65,32 @@ export default function AddStaff() {
       <div className="bg-[#e5e5cb] border-2 border-[#3C2A21] p-8 rounded-lg shadow-lg w-full max-w-xl">
         <h1 className="text-2xl font-semibold text-[#3C2A21] text-center mb-6">Add Staff Member</h1>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-[#3C2A21]">
+              FirstName
+            </label>
+            <input
+              type="text"
+              id="firstName"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+              className="w-full p-2 rounded-md bg-white text-[#3C2A21] border border-[#3C2A21]"
+            />
+          </div>
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-[#3C2A21]">
+              LastName
+            </label>
+            <input
+              type="text"
+              id="lastName"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+              className="w-full p-2 rounded-md bg-white text-[#3C2A21] border border-[#3C2A21]"
+            />
+          </div>
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-[#3C2A21]">
               Username
@@ -124,6 +156,21 @@ export default function AddStaff() {
               readOnly
               className="w-full p-2 rounded-md bg-white text-[#3C2A21] border border-[#3C2A21]"
             />
+          </div>
+          <div>
+            <label> Gender</label>
+            <select name="gender"
+            onChange={(e) => setgender(e.target.value)}>
+              
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+            </select>
+          </div>
+          <div>
+            <label> Phone</label>
+            <input type="text" name="phoneNumber" 
+           onChange={(e) => setphoneNumber(e.target.value)}
+           required />
           </div>
           <div className="md:col-span-2 flex justify-center">
             <button

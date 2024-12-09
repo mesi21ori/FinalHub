@@ -1,0 +1,107 @@
+export interface FormDataType {
+    title: string;
+    description: string;
+    contentType: string;
+    accessLevel: string;
+    uploaderId: string;
+    institutionId: string;
+    category: string;
+    file?: File | null;  // Add this line
+    metaData?: Record<string, any>;
+    viewOnly?: boolean;
+    isFree?: boolean;
+    bookDetails?: {
+      title: string;
+      subtitle?: string;
+      abstract?: string;
+      author: string;
+      coAuthors: string[];
+      editor?: string;
+      publisher?: string;
+      publicationDate: Date;
+      language: string;
+      wordCount?: number;
+      genre?: string;
+      keywords: string[];
+      content: string;
+      isPublished: boolean;
+      uploadedBy: string;
+      uploadDate: Date;
+      lastEditBy?: string;
+      lastEditDate?: Date;
+    };
+    videoDetails?: {
+      title: string;
+      description?: string;
+      thumbnail?: string;
+      director?: string;
+      producer?: string;
+      videoType?: string;
+      mainActor?: string;
+      coActors: string[];
+      cinematographer?: string;
+      editor?: string;
+      language: string;
+      releaseDate: Date;
+      uploadedBy: string;
+      uploadDate: Date;
+      lastEditBy?: string;
+      lastEditDate?: Date;
+    };
+    musicDetails?: {
+      title: string;
+      subtitle?: string;
+      albumImage?: string;
+      composer?: string;
+      musicProducer?: string;
+      musicType?: string;
+      singer?: string;
+      additionalSingers?: string[];
+      publisher?: string;
+      language: string;
+      poemAuthor?: string;
+      melodyAuthor?: string;
+      musicDirector?: string;
+      instrument?: string;
+      instrumentPlayer?: string;
+      musicAlbum?: string;
+      musicNumber?: string;
+      cameraman?: string;
+      recorder?: string;
+    };
+    photoDetails?: {
+      title: string;
+      imageUrl: string;
+      photographer?: string;
+      cameraModel?: string;
+      photoLocation?: string;
+      dateTaken: Date;
+      description?: string;
+      tags: string[];
+      uploadedBy: string;
+      uploadDate: Date;
+      lastEditBy?: string;
+      lastEditDate?: Date;
+    };
+    textDetails?: {
+      title: string;
+      subtitle?: string;
+      abstract?: string;
+      author: string;
+      coAuthors: string[];
+      editor?: string;
+      publisher?: string;
+      publicationDate: Date;
+      language: string;
+      wordCount?: number;
+      genre?: string;
+      keywords: string[];
+      content: string;
+      isPublished: boolean;
+      uploadedBy: string;
+      uploadDate: Date;
+      lastEditBy?: string;
+      lastEditDate?: Date;
+    };
+  }
+  

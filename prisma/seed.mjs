@@ -20,8 +20,8 @@ async function main() {
   // Create the Platform Admin user
   const platformAdmin = await prisma.user.create({
     data: {
-      firstName: 'Platform',
-      lastName: 'Admin',
+      // firstName: 'Platform',
+      // lastName: 'Admin',
       email: 'shumetmeseret7@gmail.com', // Correct email format
       username: 'platform_admin',
       password: await bcrypt.hash(adminPassword, 10), // Hash password
