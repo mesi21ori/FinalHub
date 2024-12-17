@@ -20,9 +20,7 @@
     "allowJs": true, // Allow JavaScript files to be compiled
     "incremental": true, // Enable incremental compilation
     "paths": {
-      "@/*": [
-        "./src/*" // Aliases for paths
-      ]
+      "@/*": ["./src/*"]
     },
     "composite": true, // Required for incremental builds and project references
     "plugins": [

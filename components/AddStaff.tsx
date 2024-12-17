@@ -41,7 +41,7 @@ export default function AddStaff() {
         username,
         lastName,
         gender,
-        phoneNumber,
+        //phoneNumber,
         email,
         role,
         password,
@@ -166,12 +166,12 @@ export default function AddStaff() {
               <option value="FEMALE">Female</option>
             </select>
           </div>
-          <div>
+          {/* <div>
             <label> Phone</label>
             <input type="text" name="phoneNumber" 
            onChange={(e) => setphoneNumber(e.target.value)}
            required />
-          </div>
+          </div> */}
           <div className="md:col-span-2 flex justify-center">
             <button
               type="submit"

@@ -628,6 +628,144 @@
 // export default handler;
 
 
+// import { NextApiRequest, NextApiResponse } from 'next';
+// import prisma from '../../../lib/prisma';
+// import { Chapa } from 'chapa-nodejs';
+
+// const chapa = new Chapa({
+//   secretKey: process.env.CHAPA_SECRET_KEY || '',
+// });
+
+// const generateTransactionReference = (): string =>
+//   `tx_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+
+// const calculateEndDate = (duration: 'DAILY' | 'MONTHLY' | 'YEARLY'): Date => {
+//   const startDate = new Date();
+//   switch (duration) {
+//     case 'DAILY':
+//       startDate.setDate(startDate.getDate() + 1);
+//       break;
+//     case 'MONTHLY':
+//       startDate.setMonth(startDate.getMonth() + 1);
+//       break;
+//     case 'YEARLY':
+//       startDate.setFullYear(startDate.getFullYear() + 1);
+//       break;
+//     default:
+//       throw new Error('Invalid subscription duration');
+//   }
+//   return startDate;
+// };
+
+// const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+//   if (req.method !== 'POST') {
+//     res.setHeader('Allow', ['POST']);
+//     return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+//   }
+
+//   const { amount, email, userId, planId } = req.body;
+
+//   // Validate input fields
+//   if (!amount || isNaN(parseFloat(amount))) {
+//     return res.status(400).json({ error: 'Invalid or missing amount' });
+//   }
+
+//   if (!email || !userId || !planId) {
+//     return res.status(400).json({ error: 'Missing required fields: email, userId, or planId' });
+//   }
+
+//   try {
+//     const userIdInt = parseInt(userId, 10);
+//     const now = new Date();
+
+//     // Check if the user already has an active subscription
+//     const activeSubscription = await prisma.userSubscription.findFirst({
+//       where: { userId: userIdInt, isActive: true },
+//       orderBy: { endDate: 'desc' }, // Fetch the most recent active subscription
+//     });
+
+//     if (activeSubscription) {
+//       // If the user has an active subscription, you can either:
+//       // 1. Extend the current active subscription.
+//       // 2. Update the existing subscription (e.g., to extend the end date, change the plan, etc.).
+//       return res.status(400).json({ error: 'User already has an active subscription.' });
+//     }
+
+//     // If there's an inactive subscription, deactivate it and create a new one
+//     const recentSubscription = await prisma.userSubscription.findFirst({
+//       where: { userId: userIdInt },
+//       orderBy: { endDate: 'desc' }, // Fetch the most recent subscription
+//     });
+
+//     if (recentSubscription && !recentSubscription.isActive) {
+//       // Deactivate the old subscription if it is within the valid period
+//       if (recentSubscription.endDate > now) {
+//         await prisma.userSubscription.update({
+//           where: { id: recentSubscription.id },
+//           data: {
+//             isActive: false,
+//           },
+//         });
+//       }
+
+//       // Create a new subscription entry for this user (inactive until payment confirmation)
+//       const subscriptionPlan = await prisma.subscriptionPlan.findUnique({
+//         where: { id: planId },
+//       });
+
+//       if (!subscriptionPlan) {
+//         return res.status(400).json({
+//           error: `Plan with ID ${planId} does not exist.`,
+//         });
+//       }
+
+//       const txRef = generateTransactionReference();
+
+//       const paymentResponse = await chapa.initialize({
+//         amount: parseFloat(amount).toFixed(2),
+//         currency: 'ETB',
+//         email,
+//         tx_ref: txRef,
+//         callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/chapa/callback`,
+//         return_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment-status?tx_ref=${txRef}`,
+//       });
+
+//       if (paymentResponse.status !== 'success') {
+//         console.error('Payment initiation failed:', paymentResponse);
+//         return res.status(500).json({
+//           error: paymentResponse.message || 'Payment initiation failed. Please try again later.',
+//         });
+//       }
+
+//       // Create a new subscription entry for this user (inactive until payment confirmed)
+//       await prisma.userSubscription.create({
+//         data: {
+//           userId: userIdInt,
+//           planId: planId,
+//           transactionId: txRef,
+//           startDate: now,
+//           endDate: calculateEndDate(subscriptionPlan.duration),
+//           isActive: false, // Mark as inactive until payment is confirmed
+//         },
+//       });
+
+//       return res.status(200).json({
+//         checkoutUrl: paymentResponse.data?.checkout_url,
+//       });
+//     }
+
+//     return res.status(400).json({ error: 'No valid subscription found for the user.' });
+//   } catch (error) {
+//     console.error('Error processing payment:', error);
+//     return res.status(500).json({
+//       error: 'An error occurred while processing the payment. Please try again later.',
+//     });
+//   }
+// };
+
+// export default handler;
+
+
 import { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '../../../lib/prisma';
 import { Chapa } from 'chapa-nodejs';
@@ -685,18 +823,64 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     if (activeSubscription) {
-      // If the user has an active subscription, you can either:
-      // 1. Extend the current active subscription.
-      // 2. Update the existing subscription (e.g., to extend the end date, change the plan, etc.).
+      // If the user has an active subscription, return an error
       return res.status(400).json({ error: 'User already has an active subscription.' });
     }
 
-    // If there's an inactive subscription, deactivate it and create a new one
+    // If there's no active subscription, check for a recent (inactive) subscription
     const recentSubscription = await prisma.userSubscription.findFirst({
       where: { userId: userIdInt },
       orderBy: { endDate: 'desc' }, // Fetch the most recent subscription
     });
 
+    // If the user has no subscription records, create a new one
+    if (!recentSubscription) {
+      const subscriptionPlan = await prisma.subscriptionPlan.findUnique({
+        where: { id: planId },
+      });
+
+      if (!subscriptionPlan) {
+        return res.status(400).json({
+          error: `Plan with ID ${planId} does not exist.`,
+        });
+      }
+
+      const txRef = generateTransactionReference();
+
+      const paymentResponse = await chapa.initialize({
+        amount: parseFloat(amount).toFixed(2),
+        currency: 'ETB',
+        email,
+        tx_ref: txRef,
+        callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/chapa/callback`,
+        return_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment-status?tx_ref=${txRef}`,
+      });
+
+      if (paymentResponse.status !== 'success') {
+        console.error('Payment initiation failed:', paymentResponse);
+        return res.status(500).json({
+          error: paymentResponse.message || 'Payment initiation failed. Please try again later.',
+        });
+      }
+
+      // Create a new subscription for the user without any previous subscription
+      await prisma.userSubscription.create({
+        data: {
+          userId: userIdInt,
+          planId: planId,
+          transactionId: txRef,
+          startDate: now,
+          endDate: calculateEndDate(subscriptionPlan.duration),
+          isActive: false, // Mark as inactive until payment is confirmed
+        },
+      });
+
+      return res.status(200).json({
+        checkoutUrl: paymentResponse.data?.checkout_url,
+      });
+    }
+
+    // If there's an inactive subscription, deactivate it and create a new one
     if (recentSubscription && !recentSubscription.isActive) {
       // Deactivate the old subscription if it is within the valid period
       if (recentSubscription.endDate > now) {
@@ -708,7 +892,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         });
       }
 
-      // Create a new subscription entry for this user (inactive until payment confirmation)
       const subscriptionPlan = await prisma.subscriptionPlan.findUnique({
         where: { id: planId },
       });
@@ -764,3 +947,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 export default handler;
+

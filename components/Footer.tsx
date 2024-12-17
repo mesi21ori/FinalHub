@@ -1,149 +1,9 @@
-// "use client"; 
-
-// import React, { useState } from "react";
-// import { FaStar, FaFacebookF, FaLinkedinIn, FaTwitter, FaYoutube, FaInstagram } from "react-icons/fa";
-
-// const Footer: React.FC = () => {
-//   const [rating, setRating] = useState(4);
-//   const [feedback, setFeedback] = useState("");
-
-//   const handleRating = (rate: number) => {
-//     setRating(rate);
-//   };
-
-//   const handleSubmit = () => {
-//     console.log("Feedback submitted:", feedback, "Rating:", rating);
-//     setFeedback("");
-//   };
-
-//   const scrollToSection = (id: string) => {
-//     const section = document.getElementById(id);
-//     if (section) {
-//       section.scrollIntoView({ behavior: "smooth" });
-//     }
-//   };
-
-//   return (
-//     <footer className="bg-[#3C2A21] text-[#D5CEA3] py-8 px-4">
-//       {/* Feedback Section */}
-//       <div className="max-w-4xl mx-auto text-center mb-6">
-//         <div className="flex justify-center items-center space-x-2 mb-4">
-//           {[1, 2, 3, 4, 5].map((star) => (
-//             <FaStar
-//               key={star}
-//               onClick={() => handleRating(star)}
-//               className={`cursor-pointer ${star <= rating ? "text-[#D5CEA3]" : "text-[#5a3f36]"}`}
-//               size={24}
-//             />
-//           ))}
-//           <span className="text-[#D5CEA3]">{rating}/5 stars</span>
-//         </div>
-//         <div className="flex justify-center items-center mb-4">
-//           <input
-//             type="text"
-//             value={feedback}
-//             onChange={(e) => setFeedback(e.target.value)}
-//             placeholder="My feedback!!"
-//             className="bg-[#3C2A21] border border-[#D5CEA3] rounded-lg px-4 py-2 text-[#D5CEA3] w-full max-w-md"
-//           />
-//           <button
-//             onClick={handleSubmit}
-//             className="bg-[#D5CEA3] text-[#3C2A21] px-4 py-2 rounded-lg hover:bg-[#c8b4a3] ml-2"
-//           >
-//             Submit
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* Separator Line */}
-//       <div className="border-t border-[#D5CEA3] my-6"></div>
-
-//       {/* Footer Content */}
-//       <div className="flex justify-between items-center">
-//         {/* Company Name on the Bottom Left */}
-//         <div className="text-sm text-[#D5CEA3]">
-//           ©2023 Company Name
-//         </div>
-
-//         {/* Navigation Links Centered */}
-//         <div className="flex space-x-8">
-
-//           <button
-//             onClick={() => scrollToSection("hero")}
-//             className="hover:text-gray-400"
-//           >
-//             Home
-//           </button>
-
-//           <button
-//             onClick={() => scrollToSection("services")}
-//             className="hover:text-gray-400"
-//           >
-//             Our Services
-//           </button>
-
-//           <button
-//             onClick={() => scrollToSection("testimonials")}
-//             className="hover:text-gray-400"
-//           >
-//             Testimonials
-//           </button>
-
-//           <button
-//             onClick={() => scrollToSection("about")}
-//             className="hover:text-gray-400"
-//           >
-//             About
-//           </button>
-
-//           <button
-//             onClick={() => scrollToSection("contact")}
-//             className="hover:text-gray-400"
-//           >
-//             Contact
-//           </button>
-//         </div>
-
-//         {/* Social Media Icons on the Bottom Right */}
-//         <div className="flex space-x-4">
-//           <a href="#" aria-label="Facebook" className="hover:text-gray-400">
-//             <FaFacebookF size={20} />
-//           </a>
-//           <a href="#" aria-label="LinkedIn" className="hover:text-gray-400">
-//             <FaLinkedinIn size={20} />
-//           </a>
-//           <a href="#" aria-label="Twitter" className="hover:text-gray-400">
-//             <FaTwitter size={20} />
-//           </a>
-//           <a href="#" aria-label="YouTube" className="hover:text-gray-400">
-//             <FaYoutube size={20} />
-//           </a>
-//           <a href="#" aria-label="Instagram" className="hover:text-gray-400">
-//             <FaInstagram size={20} />
-//           </a>
-//         </div>
-//       </div>
-//     </footer>
-//   );
-// };
-
-// export default Footer;
-
-
-
 
 "use client";
 
-import React, { useState, useEffect } from "react";
-import {
-  FaStar,
-  FaFacebookF,
-  FaLinkedinIn,
-  FaTwitter,
-  FaYoutube,
-  FaInstagram,
-} from "react-icons/fa";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { FaStar, FaFacebookF, FaLinkedinIn, FaTwitter, FaYoutube, FaInstagram } from "react-icons/fa";
 
 const Footer: React.FC = () => {
   const [rating, setRating] = useState(4);
@@ -197,73 +57,74 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-[#3C2A21] text-[#D5CEA3] py-8 px-4">
-      {/* Feedback Section */}
-      <div className="max-w-4xl mx-auto text-center mb-6">
-        <div className="flex justify-center items-center space-x-2 mb-4">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <FaStar
-              key={star}
-              onClick={() => handleRating(star)}
-              className={`cursor-pointer ${
-                star <= rating ? "text-[#D5CEA3]" : "text-[#5a3f36]"
-              }`}
-              size={24}
+    <footer className="bg-[#E5E5CB] text-[#3a2f2c] py-8 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Rating Section */}
+        <div className="text-center mb-6">
+          <div className="flex justify-center items-center space-x-2 mb-4">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <FaStar
+                key={star}
+                onClick={() => handleRating(star)}
+                className={`cursor-pointer ${star <= rating ? "text-[#3a2f2c]" : "text-[#a58866]"}`}
+                size={20}
+              />
+            ))}
+            <span className="text-[#3a2f2c]">{rating}/5 stars</span>
+          </div>
+          <div className="flex justify-center items-center space-x-2">
+            <input
+              type="text"
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+              placeholder="My feedback!!"
+              className="bg-[#E5E5CB] border border-[#3a2f2c] rounded-lg px-2 py-1 text-sm text-[#3a2f2c] w-full max-w-xs"
             />
-          ))}
-          <span className="text-[#D5CEA3]">{rating}/5 stars</span>
-        </div>
-        <div className="flex justify-center items-center mb-4">
-          <input
-            type="text"
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-            placeholder="My feedback!!"
-            className="bg-[#3C2A21] border border-[#D5CEA3] rounded-lg px-4 py-2 text-[#D5CEA3] w-full max-w-md"
-          />
-          <button
-            onClick={handleSubmit}
-            className="bg-[#D5CEA3] text-[#3C2A21] px-4 py-2 rounded-lg hover:bg-[#c8b4a3] ml-2"
-          >
-            Submit
-          </button>
-        </div>
-        {message && <p className="text-[#D5CEA3]">{message}</p>}
-      </div>
-
-      {/* Separator Line */}
-      <div className="border-t border-[#D5CEA3] my-6"></div>
-
-      {/* Footer Content */}
-      <div className="flex justify-between items-center">
-        <div className="text-sm text-[#D5CEA3]">©2023 Company Name</div>
-
-        {/* Navigation Links Centered */}
-        <div className="flex space-x-8">
-          <button onClick={() => scrollToSection("hero")} className="hover:text-gray-400">Home</button>
-          <button onClick={() => scrollToSection("services")} className="hover:text-gray-400">Our Services</button>
-          <button onClick={() => scrollToSection("testimonials")} className="hover:text-gray-400">Testimonials</button>
-          <button onClick={() => scrollToSection("about")} className="hover:text-gray-400">About</button>
-          <button onClick={() => scrollToSection("contact")} className="hover:text-gray-400">Contact</button>
+            <button
+              onClick={handleSubmit}
+              className="bg-[#3a2f2c] text-[#E5E5CB] px-3 py-1 rounded-lg text-sm hover:bg-[#c8b4a3]"
+            >
+              Submit
+            </button>
+          </div>
         </div>
 
-        {/* Social Media Icons */}
-        <div className="flex space-x-4">
-          <a href="#" aria-label="Facebook" className="hover:text-gray-400">
-            <FaFacebookF size={20} />
-          </a>
-          <a href="#" aria-label="LinkedIn" className="hover:text-gray-400">
-            <FaLinkedinIn size={20} />
-          </a>
-          <a href="#" aria-label="Twitter" className="hover:text-gray-400">
-            <FaTwitter size={20} />
-          </a>
-          <a href="#" aria-label="YouTube" className="hover:text-gray-400">
-            <FaYoutube size={20} />
-          </a>
-          <a href="#" aria-label="Instagram" className="hover:text-gray-400">
-            <FaInstagram size={20} />
-          </a>
+        <div className="border-t border-[#3a2f2c] my-6"></div>
+
+        {/* Footer Links & Icons */}
+        <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-8">
+          {/* Company Info */}
+          <div className="text-sm text-[#3a2f2c] text-center sm:text-left">
+            ©2023 Company Name
+          </div>
+
+          {/* Navigation Links */}
+          <div className="flex flex-wrap justify-center sm:justify-start space-x-4 text-sm">
+            <a href="#" className="hover:text-gray-400">Home</a>
+            <a href="#" className="hover:text-gray-400">Our Services</a>
+            <a href="#" className="hover:text-gray-400">Testimonials</a>
+            <a href="#" className="hover:text-gray-400">About</a>
+            <a href="#" className="hover:text-gray-400">Contact</a>
+          </div>
+
+          {/* Social Icons */}
+          <div className="flex justify-center sm:justify-end space-x-6 mt-2 sm:mt-0 flex-wrap">
+            <a href="#" aria-label="Facebook" className="hover:text-gray-400">
+              <FaFacebookF size={24} />
+            </a>
+            <a href="#" aria-label="LinkedIn" className="hover:text-gray-400">
+              <FaLinkedinIn size={24} />
+            </a>
+            <a href="#" aria-label="Twitter" className="hover:text-gray-400">
+              <FaTwitter size={24} />
+            </a>
+            <a href="#" aria-label="YouTube" className="hover:text-gray-400">
+              <FaYoutube size={24} />
+            </a>
+            <a href="#" aria-label="Instagram" className="hover:text-gray-400">
+              <FaInstagram size={24} />
+            </a>
+          </div>
         </div>
       </div>
     </footer>
@@ -271,3 +132,5 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
+
+

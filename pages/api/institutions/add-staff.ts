@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  const {firstName ,lastName , gender,phoneNumber,username, email, role, password, institutionId } = req.body;
+  const {firstName ,lastName , gender,username, email, role, password, institutionId } = req.body;
 
   try {
     // Validate input
@@ -55,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         firstName,
         lastName, 
         gender,
-        phoneNumber,
+    //    phoneNumber,
         username,
         email,
         role,

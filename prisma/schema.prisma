@@ -480,22 +480,19 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
-
 model User {
-  id              Int        @id @default(autoincrement())
+  id              Int         @id @default(autoincrement())
   profilePicture  String?
-  email           String     @unique
+  email           String      @unique
   firstName       String?
   lastName        String?
   gender          GenderType? // Assuming `GenderType` is an enum
   dateOfBirth     DateTime?
-  phoneNumber     String?
-  username        String     @unique
+  username        String      @unique
   password        String
-  role            Role       @default(PUBLIC_USER)
-  isActive        Boolean    @default(true)
-  isPlatformAdmin Boolean    @default(false)
+  role            Role        @default(PUBLIC_USER)
+  isActive        Boolean     @default(true)
+  isPlatformAdmin Boolean     @default(false)
   preferences     Json? // Storing preference IDs as JSON array
 
   // Relations
@@ -588,7 +585,7 @@ model Institution {
   id                   Int                @id @default(autoincrement())
   registrationNumber   String             @unique
   name                 String
-  address              Json  // consist 4 thing   
+  address              Json // consist 4 thing   
   website              String?
   emailDomain          String?
   collaborationPurpose String?
@@ -597,18 +594,19 @@ model Institution {
   document             String?
   photo                String?
   type                 InstitutionType?
-  Phone         String
-  registrationStatus   RegistrationStatus   @default(PENDING)
+  Phone                String
+  registrationStatus   RegistrationStatus @default(PENDING)
 
-  admin               User?                @relation("InstitutionAdmin", fields: [adminId], references: [id])
-  adminId             Int?                 @unique
+  admin   User? @relation("InstitutionAdmin", fields: [adminId], references: [id])
+  adminId Int?  @unique
 
-  users               User[]               @relation("UserInstitution")
-  content             Content[]
+  users   User[]    @relation("UserInstitution")
+  content Content[]
 
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
 model Feedback {
   id        Int      @id @default(autoincrement())
   content   String
@@ -620,10 +618,10 @@ model Feedback {
   user User @relation(fields: [userId], references: [id])
 }
 
-
 model Content {
   id            Int             @id @default(autoincrement())
   title         String
+  coverImage        String?
   description   String
   contentType   ContentType
   fileUrl       String?
@@ -632,7 +630,7 @@ model Content {
   institutionId Int
   viewOnly      Boolean         @default(true)
   isFree        Boolean         @default(false)
-  category      HistoryCategory
+  eventType      EventType
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @default(now())
 
@@ -643,7 +641,7 @@ model Content {
   comments       Comment[]
 
   // Content-specific details (relations to specific models)
-  bookDetails     HistoricalBook?  @relation("BookContentRelation", fields: [bookDetailsId], references: [id])
+  bookDetails     HistoricalBook?    @relation("BookContentRelation", fields: [bookDetailsId], references: [id])
   videoDetails    HistoricalVideo?   @relation("VideoContentRelation", fields: [videoDetailsId], references: [id])
   musicDetails    HistoricalMusic?   @relation("MusicContentRelation", fields: [musicDetailsId], references: [id])
   artifactDetails HistoricalPhoto?   @relation("ArtifactContentRelation", fields: [artifactDetailsId], references: [id])
@@ -659,35 +657,36 @@ model Content {
 
 model HistoricalVideo {
   id                 Int       @id @default(autoincrement())
-  publisher          String
-  copyrightHolder    String?
-  language           String
-  subtitles          String[]
-  duration           String?
-  publicationDate    DateTime
-  preservationStatus String?
-  primarySource      Boolean?
-  eventDate          DateTime?
-  location           String?
-  eventType          String?
-  significance       String?
-  historicalFigures  String[]
-  director           String?
-  producer           String?
-  cameramen          String[]
-  cinematographer    String?
-  cast               String[]
-  relatedArtifacts   String[]
-  ageRating          String?
+  alternativeTitle   String
+  language           String //
+  subtitles          String[] //
+  copyrightHolder    String? //
+  significance       String? //
+  historicalFigures  String[]  @default([]) //
+  publisher          String //
+  director           String[]  @default([]) //
+  producer           String[]  @default([]) //
+  cameraman          String[]  @default([]) //
+  cinematographer    String[]  @default([]) //
+  cast               String[]  @default([]) //
+  eventDate          DateTime? //
+  preservationStatus String? //
+  source             String? //
+  ageRating          String? //
+  location           String? //
+  // coverImage         String? //
+  resolution         String? //
+  duration           String? //
+  relatedArtifacts   String[]  @default([]) //
+  publicationDate    String
   numberOfViews      Int
   numberOfLikes      Int
   numberOfComments   Int
-  coverImage         String?
-
-  uploadedBy   Int
-  uploadDate   DateTime  @default(now())
-  lastEditBy   Int?
-  lastEditDate DateTime?
+  uploadedBy         Int
+  uploadDate         DateTime  @default(now())
+  lastEditBy         Int?
+  lastEditDate       DateTime?
+  isActive           Boolean
 
   uploader       User     @relation("VideoUploader", fields: [uploadedBy], references: [id])
   lastEditor     User?    @relation("VideoLastEditor", fields: [lastEditBy], references: [id])
@@ -699,9 +698,9 @@ model HistoricalVideo {
 model HistoricalBook {
   id                 Int       @id @default(autoincrement())
   alternativeTitle   String?
-  coverImage         String?
+  // coverImage         String?
   subtitle           String[]
- // bookUrl            String
+  // bookUrl            String
   author             String
   coAuthors          String[]
   editor             String[]
@@ -736,11 +735,12 @@ model HistoricalBook {
 
   @@index([uploadedBy])
 }
+
 model HistoricalMusic {
-  id                 Int       @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   alternativeTitle   String?
-  coverImage         String?
+  // coverImage         String?
   albumImage         String?
   subtitle           String[]
   composer           String?
@@ -784,25 +784,25 @@ model HistoricalMusic {
 }
 
 model HistoricalPhoto {
-  id               Int       @id @default(autoincrement())
-  coverImage       String?
-  tags             String[]
-  eventDate        DateTime?
-  photographer     String?
-  photos           String[] // Assuming these are URLs or paths to photo images
- // imageUrl         String
-  format           String?
-  photoLocation    String?
-  capturedDate     DateTime?
+  id                Int       @id @default(autoincrement())
+  // coverImage        String?
+  tags              String[]
+  eventDate         DateTime?
+  photographer      String?
+  photos            String[] // Assuming these are URLs or paths to photo images
+  // imageUrl         String
+  format            String?
+  photoLocation     String?
+  capturedDate      DateTime?
   eventType         String?
   significance      String?
   historicalFigures String[]
   primarySource     Boolean?
-  numberOfViews    Int
-  numberOfLikes    Int
-  numberOfComments Int
-  lastEditBy       Int?
-  lastEditDate     DateTime?
+  numberOfViews     Int
+  numberOfLikes     Int
+  numberOfComments  Int
+  lastEditBy        Int?
+  lastEditDate      DateTime?
 
   // Relationships
   uploader       User     @relation("PhotoUploader", fields: [uploadedBy], references: [id])
@@ -818,7 +818,7 @@ model HistoricalPhoto {
 model HistoricalArticle {
   id                Int       @id @default(autoincrement())
   alternativeTitle  String?
-  coverImage        String?
+  // coverImage        String?
   //ArticleUrl        String
   language          String
   author            String
@@ -935,15 +935,17 @@ enum RequestStatus {
   REJECTED
 }
 
-enum HistoryCategory {
-  MODERN_HISTORY
-  MEDIEVAL_HISTORY
-  ANCIENT_HISTORY
-  ECONOMIC_HISTORY
-  POLITICAL_HISTORY
-  ETHIOPIAN_REVOLUTION
-  ETHIOPIAN_NATIONALISM
-  ETHIOPIAN_LITERATURE
+enum EventType {
+  WAR
+  POLITICS
+  RELIGION
+  CULTURE
+  FAMINE_CRISIS
+  CIVIL_RIGHTS
+  ECONOMY
+  DIPLOMACY
+  LEADERSHIP
+  ETHNIC_MOVMENTS
 }
 
 enum InstitutionType {

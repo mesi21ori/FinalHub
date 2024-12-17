@@ -35,7 +35,7 @@ import React, { useState } from 'react';// Ensure this points to the correct Lay
 
 import '../src/app/globals.css'; 
 import Layout from './testn';
-import FileUpload from '../components/FileUpload';
+import VideoUpload from '../components/VideoUpload';
 
 const UserListPage: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -45,7 +45,7 @@ const UserListPage: React.FC = () => {
       <div className="flex flex-col h-screen bg-[#E5E5CB] p-6">
        
         <div className="flex-grow"> {/* Use flex-grow to fill the space without scrolling */}
-          <FileUpload/>
+          <VideoUpload/>
         </div>
       </div>
     </Layout>

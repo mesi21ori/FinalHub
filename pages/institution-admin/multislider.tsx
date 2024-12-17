@@ -279,7 +279,6 @@ const InstitutionCreatePage = () => {
     adminFirstName: string;
     adminLastName: string;
     adminGender: 'MALE' | 'FEMALE';
-    adminPhoneNumber: string;
     adminUsername: string;
     adminPassword: string;
     
@@ -298,7 +297,6 @@ const InstitutionCreatePage = () => {
     adminFirstName: '',
     adminLastName: '',
     adminGender: 'MALE',
-    adminPhoneNumber: '',
     adminUsername: '',
     adminPassword: '',
   });
@@ -371,7 +369,7 @@ const InstitutionCreatePage = () => {
 
       const data = await response.json(); // Parse the JSON if the response is OK
       alert('Institution and admin created successfully!');
-      router.push('/content');
+      router.push('/signin');
     } catch (error) {
       console.error('Request failed:', error);
       alert('An error occurred while creating the institution.');
@@ -447,10 +445,10 @@ const InstitutionCreatePage = () => {
           <option value="FEMALE">Female</option>
         </select>
       </div>
-      <div>
+      {/* <div>
         <label>Admin Phone</label>
         <input type="text" name="adminPhoneNumber" onChange={handleChange} required />
-      </div>
+      </div> */}
       <div>
         <label>Admin Username</label>
         <input type="text" name="adminUsername" onChange={handleChange} required />

@@ -1,22 +1,24 @@
-/* src/app/globals.css */
 @import "tailwindcss/base"; 
 @import "tailwindcss/components"; 
 @import "tailwindcss/utilities"; 
 @import '~slick-carousel/slick/slick.css';
 @import '~slick-carousel/slick/slick-theme.css';
 
+
 body {
-  font-family: 'Inter', sans-serif;
-  background-color: #e5e5cb; 
+  font-family: 'Nunito', sans-serif;
+  background-color: #E5E5CB; 
+  margin: 0;
+  padding: 0;
 }
 
 .text-stroke {
   -webkit-text-stroke: 1.5px #3C2A21; 
-  color: transparent; 
+  color: transparent;
 }
 
 .slick-prev, .slick-next {
-  background-color: #3C2A21;   
+  background-color: #3C2A21;
   color: #fff;
   border-radius: 50%;
   width: 40px;
@@ -57,18 +59,84 @@ section {
   left: 0;
   top: 0;
   z-index: -1;
-  color: #3e251c; /* Stroke color */
-  filter: blur(2px); /* Adjust blur for stroke effect */
+  color: #3e251c; 
+  filter: blur(2px); 
   transform: translate(2px, 2px); 
 }
 
+body {
+  background-color: #E5E5CB;
+  font-family: 'Inter', sans-serif;
 
-input[type="checkbox"]:checked {
-  accent-color: #3C2A21;
 }
 
-/* globals.css */
+.transition-transform {
+  transition: transform 0.5s ease-in-out;
+}
 
-input[type="checkbox"]:checked {
-  accent-color: #3C2A21;
+ /* radio */
+.custom-radio input[type="radio"] {
+  display: none; /* Hide the default radio */
+}
+
+.custom-radio .radio-label {
+  position: relative;
+  padding-left: 25px; /* Space for custom radio */
+  cursor: pointer;
+}
+
+.custom-radio .radio-label:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #1A120B;
+  border-radius: 50%;
+  background-color: #E5E5CB;
+  transition: background-color 0.3s;
+}
+
+.custom-radio input[type="radio"]:checked + .radio-label:before {
+  background-color: #3C2A21; /* Background when selected */
+}
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  background-color: #3C2A21;
+  opacity: 0.6;
+  pointer-events: none; /* Ensure clicks go through the circles */
+}
+
+/* Customize the scrollbar for modern browsers */
+.custom-scrollbar {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #3c2a21 #e5e5cb; /* Firefox */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+  height: 8px; /* Height of the scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #3a2f2c; /* Scrollbar thumb color */
+  border-radius: 4px; /* Rounded corners */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #604a38; /* Darker thumb on hover */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #F7F6E9; /* Track color */
+  border-radius: 4px; /* Rounded corners */
+}
+
+.custom-select:hover,
+.custom-select:focus {
+  border-color: #E5E5CB;
+  outline: none;
+  box-shadow: 0 0 2px #E5E5CB;
 }

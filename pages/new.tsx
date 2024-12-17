@@ -214,7 +214,7 @@
 
 import React, { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import Layout from "../components/SideMenu";
+import Layout from "../components/SideMenuOdd";
 import '../src/app/globals.css';
 import axios from 'axios';
 

@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import '../src/app/globals.css'; 
 import Layout from './testn';
-import FileUpload from '../components/FileUpload';
+import FileUpload from '../components/VideoUpload';
 
 const CreateSubscription: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState(false);
