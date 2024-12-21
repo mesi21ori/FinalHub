@@ -1,6 +1,7 @@
-node_modules
-.git
-test/
-coverage/
+node_modules/
+.git/
 .env
+coverage/
+build/
+logs/
 .vscode/
