@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "HistoricalBook" ALTER COLUMN "ISBN" SET DATA TYPE TEXT;

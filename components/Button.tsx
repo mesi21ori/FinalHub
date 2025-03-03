@@ -1,3 +1,5 @@
+
+
 "use client";
 
 import React from "react";
@@ -29,13 +31,13 @@ const Button: React.FC<ButtonProps> = ({
 
   // Variant-specific styles
   const variantStyles = {
-    view: "bg-[#3C2A21] text-white hover:bg-[#3C2A21]", // Dark brown background with white text
-    active: "bg-white text-[#3C2A21] border-2 border-[#A7D7A7]", // Light beige background, green hover
-    inactive: "bg-white text-[#3C2A21] border-2 border-[#F2B4B4]", // Light beige background, red hover
+    view: "bg-[#3a2f2c] text-white hover:bg-[#3a2f2c]", // Dark brown background with white text
+    active: "bg-white text-[#3a2f2c] border-2 border-[#A7D7A7]", // Light beige background, green hover
+    inactive: "bg-white text-[#3a2f2c] border-2 border-[#F2B4B4]", // Light beige background, red hover
     border:
-      "border-2 border-[#3C2A21] text-[#3C2A21] hover:bg-[#3C2A21] hover:text-white", // Border-only button
+      "border-2 border-[#3a2f2c] text-[#3a2f2c] hover:bg-[#3a2f2c] hover:text-white", // Border-only button
     curved:
-      "bg-[#3C2A21] text-white rounded-full hover:bg-[#3C2A21]", // Curved button variant
+      "bg-[#3a2f2c] text-white rounded-full hover:bg-[#3a2f2c]", // Curved button variant
   } as const;
 
   // Size-specific styles
@@ -55,9 +57,7 @@ const Button: React.FC<ButtonProps> = ({
     sizeStyles[size],
     borderRadius,
     className,
-    {
-      "opacity-50 cursor-not-allowed": disabled || loading, // Disabled state styles or loading state
-    },
+    { "opacity-50 cursor-not-allowed": disabled || loading }, // Disabled or loading state styles
     "w-full sm:w-auto" // Make the button full width on smaller screens and auto width on larger screens
   );
 
@@ -66,8 +66,8 @@ const Button: React.FC<ButtonProps> = ({
       type={type}
       onClick={onClick}
       className={combinedStyles}
-      disabled={disabled || loading} // Correct combination of disabled and loading states
-      aria-disabled={disabled || loading} // Correct combination of aria-disabled for accessibility
+      disabled={disabled || loading}
+      aria-disabled={disabled || loading} // Accessibility support
     >
       {loading ? (
         <span className="flex items-center justify-center">

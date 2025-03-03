@@ -29,13 +29,13 @@ const TimePicker: React.FC<TimePickerProps> = ({
     Array.from({ length: range }, (_, i) => i.toString().padStart(2, "0"));
 
   const handleTimeChange = (unit: "hours" | "minutes" | "seconds", newValue: string) => {
-    const [hours, minutes, seconds] = time.split(":");
+    const [hours = "00", minutes = "00", seconds = "00"] = time.split(":");
     const updatedTime = {
-      hours: unit === "hours" ? newValue : hours,
-      minutes: unit === "minutes" ? newValue : minutes,
-      seconds: unit === "seconds" ? newValue : seconds,
+      hours,
+      minutes,
+      seconds,
+      [unit]: newValue,
     };
-
     const newTime = `${updatedTime.hours}:${updatedTime.minutes}:${updatedTime.seconds}`;
     setTime(newTime);
     onChange(newTime);
@@ -52,14 +52,14 @@ const TimePicker: React.FC<TimePickerProps> = ({
     currentValue: string
   ) => (
     <div
-      className={`absolute top-full mt-1 left-0 w-20 max-h-32 overflow-y-auto bg-[#E5E5CB] text-[#3C2A21] rounded-md shadow-md z-50 ${dropdownOpen === unit ? "block" : "hidden"}`}
+      className={`absolute top-full mt-1 left-0 w-20 max-h-32 overflow-y-auto bg-[#f7f4f0] text-[#3C2A21] rounded-md shadow-md z-50 ${dropdownOpen === unit ? "block" : "hidden"}`}
     >
       {options.map((option) => (
         <div
           key={option}
           onClick={() => handleTimeChange(unit, option)}
           className={`cursor-pointer p-2 text-center ${
-            option === currentValue ? "bg-[#D5CEA3] text-[#3C2A21]" : "hover:bg-[#f6f5ec]"
+            option === currentValue ? "bg-[#E5E5CB] text-[#3C2A21]" : "hover:bg-[#f6f5ec]"
           }`}
         >
           {option}
@@ -103,24 +103,23 @@ const TimePicker: React.FC<TimePickerProps> = ({
           {require && <span className="text-red-700 text-2xl leading-none ml-1">*</span>}
         </label>
       </div>
-      <div className="relative inline-flex items-center space-x-6 p-2 border border-[#3C2A21] rounded-md bg-[#E5E5CB] text-[#3C2A21] custom-scrollbar">
+      <div className="relative inline-flex items-center space-x-6 p-2 border border-[#3C2A21] rounded-md bg-[#f7f4f0] text-[#3C2A21] custom-scrollbar">
         {/* Hours */}
         <div className="relative text-center">
           <span className="block text-sm font-bold">Hrs</span>
           <div
-            className="cursor-pointer w-16 p-1 rounded-md bg-[#D5CEA3] text-[#3C2A21] text-center"
+            className="cursor-pointer w-16 p-1 rounded-md bg-[#E5E5CB] text-[#3C2A21] text-center"
             onClick={() => setDropdownOpen(dropdownOpen === "hours" ? null : "hours")}
           >
             {hours}
           </div>
           {renderDropdown("hours", generateOptions(24), hours)}
         </div>
-
         {/* Minutes */}
         <div className="relative text-center">
           <span className="block text-sm font-bold">Min</span>
           <div
-            className="cursor-pointer w-16 p-1 rounded-md bg-[#D5CEA3] text-[#3C2A21] text-center"
+            className="cursor-pointer w-16 p-1 rounded-md bg-[#E5E5CB] text-[#3C2A21] text-center"
             onClick={() => setDropdownOpen(dropdownOpen === "minutes" ? null : "minutes")}
           >
             {minutes}
@@ -132,7 +131,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
         <div className="relative text-center">
           <span className="block text-sm font-bold">Sec</span>
           <div
-            className="cursor-pointer w-16 p-1 rounded-md bg-[#D5CEA3] text-[#3C2A21] text-center"
+            className="cursor-pointer w-16 p-1 rounded-md bg-[#E5E5CB] text-[#3C2A21] text-center"
             onClick={() => setDropdownOpen(dropdownOpen === "seconds" ? null : "seconds")}
           >
             {seconds}

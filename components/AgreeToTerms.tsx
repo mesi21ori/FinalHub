@@ -6,6 +6,7 @@ import Link from "next/link";
 interface TermsAgreementProps {
   isChecked: boolean;
   onToggle: () => void;
+  label: string;
 }
 
 const TermsAgreement: React.FC<TermsAgreementProps> = ({ isChecked, onToggle }) => {

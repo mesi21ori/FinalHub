@@ -6,19 +6,20 @@
 
 
 body {
-  font-family: 'Nunito', sans-serif;
-  background-color: #E5E5CB; 
+  font-family: 'font-serif ', sans-serif;
+  background-color: #f7f4f0; 
+  opacity:20;
   margin: 0;
   padding: 0;
 }
 
 .text-stroke {
-  -webkit-text-stroke: 1.5px #3C2A21; 
+  -webkit-text-stroke: 1.5px #3a2f2c; 
   color: transparent;
 }
 
 .slick-prev, .slick-next {
-  background-color: #3C2A21;
+  background-color: #3a2f2c;
   color: #fff;
   border-radius: 50%;
   width: 40px;
@@ -64,11 +65,7 @@ section {
   transform: translate(2px, 2px); 
 }
 
-body {
-  background-color: #E5E5CB;
-  font-family: 'Inter', sans-serif;
 
-}
 
 .transition-transform {
   transition: transform 0.5s ease-in-out;
@@ -99,12 +96,12 @@ body {
 }
 
 .custom-radio input[type="radio"]:checked + .radio-label:before {
-  background-color: #3C2A21; /* Background when selected */
+  background-color: #3a2f2c; /* Background when selected */
 }
 .circle {
   position: absolute;
   border-radius: 50%;
-  background-color: #3C2A21;
+  background-color: #3a2f2c;
   opacity: 0.6;
   pointer-events: none; /* Ensure clicks go through the circles */
 }
@@ -112,7 +109,7 @@ body {
 /* Customize the scrollbar for modern browsers */
 .custom-scrollbar {
   scrollbar-width: thin; /* Firefox */
-  scrollbar-color: #3c2a21 #e5e5cb; /* Firefox */
+  scrollbar-color: #3a2f2c #f7f4f0; /* Firefox */
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -139,4 +136,38 @@ body {
   border-color: #E5E5CB;
   outline: none;
   box-shadow: 0 0 2px #E5E5CB;
+}
+.small-dropdown {
+  width: 100px; /* Adjust the width to your preference */
+  font-size: 0.875rem; /* Adjust the font size */
+  padding: 0.25rem; /* Adjust padding if needed */
+}
+.label-color {
+  color: #3a2f2c;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    transform: translate3d(-50%, -50%, 0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate3d(-50%, -50%, 0) scale(1.5);
+    opacity: 0.5;
+  }
+}
+
+.animate-sparkle {
+  animation: sparkle 3s infinite;
+}
+
+@layer utilities {
+  .glow-effect {
+    box-shadow: 0 0 15px 5px rgba(58, 47, 44, 0.6); /* Soft brown glow */
+    transition: box-shadow 0.3s ease-in-out;
+  }
+
+  .glow-effect:hover {
+    box-shadow: 0 0 25px 10px rgba(58, 47, 44, 1); /* Glow intensifies on hover with brown color */
+  }
 }

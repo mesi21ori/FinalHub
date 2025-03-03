@@ -3,12 +3,11 @@ import prisma from '../../../lib/prisma';
 import multer from 'multer';
 import nextConnect from 'next-connect';
 import path from 'path';
-import fs from 'fs';
 
 // Set up multer for file handling
 const upload = multer({
     storage: multer.diskStorage({
-        destination: 'public/uploads/resercher', // Ensure this folder exists and is accessible
+        destination: 'public/uploads/researcher', // Ensure this folder exists and is accessible
         filename: (req, file, cb) => {
             cb(null, `${Date.now()}-${file.originalname}`);
         },
@@ -34,33 +33,60 @@ const apiRoute = nextConnect({
     },
 });
 
-apiRoute.use(upload.single('file'));
+// Use multer to handle file uploads for both 'supportingDocuments' and 'proofOfAffiliation'
+apiRoute.use(upload.fields([
+    { name: 'supportingDocuments', maxCount: 1 },  // Handle supportingDocuments file
+    { name: 'proofOfAffiliation', maxCount: 1 },   // Handle proofOfAffiliation file
+]));
 
 apiRoute.post(async (req: NextApiRequest, res: NextApiResponse) => {
-    const { userId, contentId, reason } = req.body;
-    const file = (req as any).file; // Access file uploaded by multer
+    const { userId, contentId, researcherType, institutionName, positionTitle, proofOfIdentity, roleExplanation, researchTopic, purposeOfResearch, historicalContentRequested, intendedUse, phoneNumber, firstName, lastName, email, gender } = req.body;
+    
+    // Access files uploaded by multer
+    const supportingDocuments = (req as any).files?.supportingDocuments?.[0]; 
+    const proofOfAffiliation = (req as any).files?.proofOfAffiliation?.[0]; 
 
-    // Validate request data
-    if (!userId || !contentId || !reason) {
-        return res.status(400).json({ error: 'User ID, content ID, and reason are required' });
+    if (!userId || !contentId || !supportingDocuments) {
+        return res.status(400).json({ error: 'User ID, content ID, and supporting documents are required' });
     }
 
     try {
-        // Check if file upload was successful
-        const filePath = file ? `/${file.filename}` : null;
-
+        // Check if file uploads were successful
+        const supportingDocumentsPath = supportingDocuments ? `/uploads/researcher/${supportingDocuments.filename}` : null;
+        const proofOfAffiliationPath = proofOfAffiliation ? `/uploads/researcher/${proofOfAffiliation.filename}` : null;
+        
         // Create access request in the database
         const accessRequest = await prisma.accessRequest.create({
             data: {
                 userId: parseInt(userId, 10),
                 contentId: parseInt(contentId, 10),
-                reason,
-                status: 'PENDING', // Default status
-                researcherFile: filePath, // Save file path if available
+                researcherType,
+                institutionName,
+                positionTitle,
+                proofOfAffiliation: proofOfAffiliationPath, // Save file path if available
+                proofOfIdentity,
+                roleExplanation,
+                researchTopic,
+                purposeOfResearch,
+                historicalContentRequested,
+                intendedUse,
+                supportingDocuments: supportingDocumentsPath, // Save file path if available
+                phoneNumber,
+                status: 'PENDING',
             },
         });
 
-        res.status(200).json({ accessRequest });
+        // Update user details in the database
+        const user = await prisma.user.update({
+            where: { id: parseInt(userId, 10) },
+            data: {
+                firstName,
+                lastName,
+                email
+            }
+        });
+
+        res.status(200).json({ accessRequest, user });
     } catch (error) {
         console.error('Error creating access request:', error);
         res.status(500).json({ error: 'Failed to create access request' });

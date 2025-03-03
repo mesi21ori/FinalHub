@@ -39,9 +39,9 @@ const UploaderDashboardLayout = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col ">
       {/* Top Navbar */}
-      <div className="w-full mb-14">
+      <div className="w-full mb-12">
         <LogoNavBar />
       </div>
 
@@ -49,7 +49,7 @@ const UploaderDashboardLayout = ({ children }: { children: ReactNode }) => {
       <div className="flex flex-1">
         {/* Sidebar */}
         <div
-          className={`fixed left-0 top-14 h-screen ${
+          className={`fixed left-0 top-12 h-screen ${
             isSidebarExpanded ? "w-64" : "w-20"
           } transition-all custom-scrollbar`}
         >
@@ -68,7 +68,8 @@ const UploaderDashboardLayout = ({ children }: { children: ReactNode }) => {
         <div
           className={`flex-1 ${
             isSidebarExpanded ? "ml-64" : "ml-20"
-          } transition-all bg-[#E5E5CB] p-6 overflow-y-auto`}
+          } transition-all bg-[#f7f4f0] p-6 overflow-y-auto`}
+          
         >
           {children}
         </div>

@@ -1,4 +1,3 @@
-// pages/api/institution/notify-pending.ts
 
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
@@ -20,14 +19,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         id: true,
         name: true,
         emailDomain: true,
+        createdAt:true,
+        type:true
       },
     });
 
     // Format notifications to include a message
     const formattedNotifications = notifications.map((institution) => ({
       id: institution.id,
+      time:institution.createdAt,
       institutionId: institution.id,
-      message: `Institution ${institution.name} (${institution.emailDomain}) is pending.`,
+      institution:institution.name,
+      type:institution.type  
     }));
 
     res.status(200).json(formattedNotifications);

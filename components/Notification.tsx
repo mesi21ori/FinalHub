@@ -12,7 +12,7 @@ const Notification: React.FC<NotificationProps> = ({ message, type, visible, onC
     if (visible) {
       const timer = setTimeout(() => {
         onClose(); // Close the notification after 3 seconds
-      }, 3000);
+      }, 30000);
       return () => clearTimeout(timer); // Clean up the timer on component unmount
     }
   }, [visible, onClose]);
@@ -22,9 +22,9 @@ const Notification: React.FC<NotificationProps> = ({ message, type, visible, onC
       <div
         className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg transition-all duration-300 ${
           type === "success"
-            ? "bg-[#E5E5CB] border-2 border-green-500 text-black"
+            ? "bg-[#f7f4f0] border-2 border-green-500 text-black"
             : type === "error"
-            ? "bg-[#E5E5CB] border-2 border-yellow-500 text-black"
+            ? "bg-[#f7f4f0] border-2 border-yellow-500 text-black"
             : "bg-yellow-500 text-black"
         }`}
         style={{ zIndex: 9999 }}

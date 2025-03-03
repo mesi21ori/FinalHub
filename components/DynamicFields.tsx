@@ -1,6 +1,8 @@
+
+
 import React, { useState } from "react";
 import InputField from "./InputField"; // Assuming InputField is in the same directory
-import { MinusIcon, PlusIcon } from "lucide-react";
+import { PlusIcon, XIcon } from "lucide-react";
 
 interface DynamicFieldsProps {
   fieldLabel: string; // Label for the fields (e.g., "Cast", "Actor", etc.)
@@ -17,69 +19,78 @@ const DynamicFields: React.FC<DynamicFieldsProps> = ({
   error,
   required = false,
 }) => {
-  const [fields, setFields] = useState<string[]>([""]);
+  const [fields, setFields] = useState<string[]>([]); // Store all the typed values
+  const [currentValue, setCurrentValue] = useState<string>("");
 
-  const handleFieldChange = (value: string, index: number) => {
-    const updatedFields = [...fields];
-    updatedFields[index] = value;
-    setFields(updatedFields);
-    onChange(updatedFields);
+  const handleFieldChange = (value: string) => {
+    setCurrentValue(value);
   };
 
   const addNewField = () => {
-    setFields([...fields, ""]);
+    if (currentValue.trim()) {
+      const updatedFields = [...fields, currentValue]; // Add the current value to the list
+      setFields(updatedFields); // Update the list of entered fields
+      setCurrentValue(""); // Reset the current input field
+      onChange(updatedFields); // Notify parent of the updated values
+    }
   };
 
   const removeField = (index: number) => {
-    const updatedFields = fields.filter((_, i) => i !== index);
-    setFields(updatedFields);
-    onChange(updatedFields);
+    const updatedFields = fields.filter((_, i) => i !== index); // Remove field by index
+    setFields(updatedFields); // Update the state
+    onChange(updatedFields); // Notify parent of the updated values
   };
 
   return (
     <div>
-      {fields.map((fieldValue, index) => (
-        <div key={index} className="flex flex-col mb-4">
-          <label htmlFor={`${fieldLabel}-${index}`} className="flex items-center">
-            {fieldLabel} {index + 1}
-            {required && <span className="text-red-700 text-2xl ml-1">*</span>} {/* Asterisk */}
-          </label>
+      {/* Input Field and Plus Button */}
+      <div className="flex items-center gap-2 ">
+        <InputField
+          id={fieldLabel}
+          type="text"
+          value={currentValue}
+          onChange={handleFieldChange}
+          placeholder={placeholder}
+          label={""}
+          className="flex-grow" // Allow the input to take up available space
+        />
+        <button
+          type="button"
+          onClick={addNewField}
+          className="bg-[#3C2A21] text-white h-6 w-6 rounded-full hover:bg-[#D5CEA3] transition flex items-center justify-center"
+          aria-label="Add field"
+        >
+          <PlusIcon className="h-3 w-3" />
+        </button>
+      </div>
 
-          <InputField
-            id={`${fieldLabel}-${index}`}
-            type="text"
-            value={fieldValue}
-            onChange={(value) => handleFieldChange(value, index)}
-            placeholder={placeholder}
-            label={""}
-          />
+      {/* Display added fields with delete (X) button */}
+      <div>
+        {fields.length > 0 && (
+          <div className="flex flex-wrap gap-2 ">
+            {fields.map((field, index) => (
+              <div
+                key={index}
+                className="flex items-center bg-[#E5E5CB] px-3 py-1 rounded-lg"
+              >
+                <span className="mr-2">{field}</span>
+                <button
+                  type="button"
+                  onClick={() => removeField(index)}
+                  className="text-red-600 hover:text-red-200 transition"
+                  aria-label="Remove field"
+                >
+                  <XIcon className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
-          {fields.length > 1 && (
-            <button
-              type="button"
-              onClick={() => removeField(index)}
-              className="flex items-center justify-center p-1 rounded-full transition hover:bg-[#D5CEA3]"
-              aria-label="Remove field"
-              style={{
-                color: "#3a2f2c",
-              }}
-            >
-              <MinusIcon className="h-5 w-5" />
-            </button>
-          )}
-        </div>
-      ))}
       {error && <p className="text-red-500 text-xs">{error}</p>}
-      <button
-        type="button"
-        onClick={addNewField}
-        className="flex items-center space-x-2 text-[#3C2A21] text-sm opacity-50 hover:text-[#3C2A21] transition"
-      >
-        <PlusIcon className="h-5 w-5" />
-        <span>Add {fieldLabel}</span>
-      </button>
     </div>
   );
 };
 
-export default DynamicFields; // Export the component as default
+export default DynamicFields;

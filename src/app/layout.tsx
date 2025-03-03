@@ -1,5 +1,5 @@
+import { ReactNode } from 'react'; // Import ReactNode
 import "./globals.css";
-import { ReactNode } from "react";
 
 export const metadata = {
   title: "Landing Page",

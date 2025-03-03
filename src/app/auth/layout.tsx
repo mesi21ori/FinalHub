@@ -7,7 +7,7 @@ interface AuthLayoutProps {
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
   return (
-    <div className="bg-[#E5E5CB] text-[#D5CEA3] flex flex-col h-screen">
+    <div className="bg-[#f7f4f0] text-[#D5CEA3] flex flex-col h-screen">
       {/* LogoNavBar as part of the layout */}
       <LogoNavBar />
 

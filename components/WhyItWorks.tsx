@@ -2,9 +2,9 @@ import React from "react";
 
 export default function WhyItWorks() {
   return (
-    <div className="bg-[#E5E5CB] py-12 px-4">
-      <div className="max-w-4xl mx-auto bg-[#D5CEA3] bg-opacity-20 rounded-lg p-8 shadow-lg"> 
-        {/* Section Title */}
+    <div className="bg-[#f7f4f0] py-12 px-4">
+      <div className="max-w-4xl mx-auto bg-[#E5E5CB] bg-opacity-20 rounded-lg p-8 shadow-lg"> 
+        
         <h2 className="text-center text-3xl font-bold text-[#3C2A21] mb-4">
           Why it works
         </h2>
@@ -16,7 +16,7 @@ export default function WhyItWorks() {
               margin: "0 auto",
             }}
           >
-            {/* Zigzag line with slight shadow */}
+           
             <div
               style={{
                 width: "100%",
@@ -26,7 +26,7 @@ export default function WhyItWorks() {
                 position: "absolute",
                 top: "0",
                 left: "0",
-                boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)", 
+                boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)",
               }}
             ></div>
             <div
@@ -55,35 +55,33 @@ export default function WhyItWorks() {
           </div>
         </div>
 
-        {/* Content Section */}
         <div className="flex flex-col md:flex-row justify-between gap-8">
-          {/* Personalized learning */}
+       
           <div className="flex-1 shadow-md p-4 rounded-md"> 
             <h3 className="text-xl font-semibold text-[#3C2A21] mb-2">
-              Personalized learning
+            Preserving Historys
             </h3>
-            <p className="text-gray-700">
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis tempora laboriosam mollitia.
+            <p className="text-gray-700 test-md">
+            Our platform is dedicated to preserving Ethiopia’s rich and diverse history, ensuring that its culture and stories are safeguarded for future generations.
             </p>
           </div>
 
-          {/* Trusted content */}
           <div className="flex-1 shadow-md p-4 rounded-md"> 
             <h3 className="text-xl font-semibold text-[#3C2A21] mb-2">
-              Trusted content
+            Easy Content Sharing
             </h3>
-            <p className="text-gray-700">
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis tempora laboriosam mollitia.
+            <p className="text-gray-700 text-md">
+            Institutions can effortlessly upload and share historical documents, photos, and videos, contributing to a global archive of Ethiopian heritage.
             </p>
           </div>
 
-          {/* Tools to empower  */}
+         
           <div className="flex-1 shadow-md p-4 rounded-md"> 
             <h3 className="text-xl font-semibold text-[#3C2A21] mb-2">
-              Tools to empower 
+            Global Access
             </h3>
-            <p className="text-gray-700">
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis tempora laboriosam mollitia.
+            <p className="text-gray-700 test-md">
+            Accessible to users worldwide, our platform allows anyone to explore, learn, and engage with Ethiopia’s history, fostering a community that celebrates its legacy.
             </p>
           </div>
         </div>

@@ -15,7 +15,7 @@ const Pagination: React.FC<PaginationProps> = ({
   handlePreviousPage,
 }) => {
   return (
-    <div className="bg-[#D5CEA3] p-2 mt-4 flex justify-between items-center rounded">
+    <div className="bg-[#f7f4f0] p-2 mt-4 flex justify-between items-center rounded">
       {/* Previous Button */}
       <button
         onClick={handlePreviousPage}

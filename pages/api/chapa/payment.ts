@@ -763,6 +763,348 @@
 //   }
 // };
 
+// // export default handler;
+
+// import { NextApiRequest, NextApiResponse } from 'next';
+// import prisma from '../../../lib/prisma';
+// import { Chapa } from 'chapa-nodejs';
+
+// const chapa = new Chapa({
+//   secretKey: process.env.CHAPA_SECRET_KEY || '',
+// });
+
+// const generateTransactionReference = (): string =>
+//   `tx_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+
+// const calculateEndDate = (
+//   validity: 'Weekly' | 'Monthly' | 'Yearly' | 'Other' | null,
+//   freeTrial: boolean,
+//   trialDuration: string | null
+// ): Date => {
+//   const startDate = new Date();
+
+//   if (freeTrial && trialDuration) {
+//     const trialDurationInDays = parseInt(trialDuration, 10); 
+//     if (isNaN(trialDurationInDays)) {
+//       throw new Error('Invalid trial duration');
+//     }
+//     startDate.setDate(startDate.getDate() + trialDurationInDays);
+//     return startDate;
+//   }
+
+//   const validityValue = validity || 'Other';  
+
+//   switch (validityValue) {
+//     case 'Weekly':
+//       startDate.setDate(startDate.getDate() + 7);
+//       break;
+//     case 'Monthly':
+//       startDate.setMonth(startDate.getMonth() + 1);
+//       break;
+//     case 'Yearly':
+//       startDate.setFullYear(startDate.getFullYear() + 1);
+//       break;
+//     case 'Other':
+
+//       break;
+//     default:
+//       throw new Error('Invalid subscription validity');
+//   }
+
+//   return startDate;
+// };
+
+// const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+//   if (req.method !== 'POST') {
+//     res.setHeader('Allow', ['POST']);
+//     return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+//   }
+
+//   const { amount, email, userId, planId } = req.body;
+
+//   // Validate input fields
+//   if (!amount || isNaN(parseFloat(amount))) {
+//     return res.status(400).json({ error: 'Invalid or missing amount' });
+//   }
+
+//   if (!email || !userId || !planId) {
+//     return res.status(400).json({ error: 'Missing required fields: email, userId, or planId' });
+//   }
+
+//   try {
+//     const userIdInt = parseInt(userId, 10);
+//     const now = new Date();
+
+//     // Check if the user already has an active subscription
+//     const activeSubscription = await prisma.userSubscription.findFirst({
+//       where: { userId: userIdInt, isActive: true },
+//       orderBy: { endDate: 'desc' }, 
+//     });
+
+//     if (activeSubscription) {
+//       return res.status(400).json({ error: 'User already has an active subscription.' });
+//     }
+
+    
+//     const recentSubscription = await prisma.userSubscription.findFirst({
+//       where: { userId: userIdInt },
+//       orderBy: { endDate: 'desc' },
+//     });
+
+//     if (!recentSubscription) {
+//       const subscriptionPlan = await prisma.subscriptionPlan.findUnique({
+//         where: { id: planId },
+//       });
+
+//       if (!subscriptionPlan) {
+//         return res.status(400).json({
+//           error: `Plan with ID ${planId} does not exist.`,
+//         });
+//       }
+
+//       const txRef = generateTransactionReference();
+
+      
+//       const endDate = calculateEndDate(subscriptionPlan.validity, subscriptionPlan.freeTrial, subscriptionPlan.trialDuration);
+
+  
+//       const paymentResponse = await chapa.initialize({
+//         amount: parseFloat(amount).toFixed(2),
+//         currency: 'ETB',
+//         email,
+//         tx_ref: txRef,
+//         callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/chapa/callback`,
+//         return_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment-status?tx_ref=${txRef}`,
+//       });
+
+//       if (paymentResponse.status !== 'success') {
+//         console.error('Payment initiation failed:', paymentResponse);
+//         return res.status(500).json({
+//           error: paymentResponse.message || 'Payment initiation failed. Please try again later.',
+//         });
+//       }
+
+//       // Create a new subscription for the user
+//       await prisma.userSubscription.create({
+//         data: {
+//           userId: userIdInt,
+//           planId: planId,
+//           transactionId: txRef,
+//           startDate: now,
+//           endDate: endDate,
+//           isActive: false, 
+//         },
+//       });
+
+//       return res.status(200).json({
+//         checkoutUrl: paymentResponse.data?.checkout_url,
+//       });
+//     }
+
+    
+//     if (recentSubscription && !recentSubscription.isActive) {
+     
+//       if (recentSubscription.endDate > now) {
+//         await prisma.userSubscription.update({
+//           where: { id: recentSubscription.id },
+//           data: {
+//             isActive: false,
+//           },
+//         });
+//       }
+
+//       const subscriptionPlan = await prisma.subscriptionPlan.findUnique({
+//         where: { id: planId },
+//       });
+
+//       if (!subscriptionPlan) {
+//         return res.status(400).json({
+//           error: `Plan with ID ${planId} does not exist.`,
+//         });
+//       }
+
+//       const txRef = generateTransactionReference();
+
+      
+//       const endDate = calculateEndDate(subscriptionPlan.validity, subscriptionPlan.freeTrial, subscriptionPlan.trialDuration);
+
+   
+//       const paymentResponse = await chapa.initialize({
+//         amount: parseFloat(amount).toFixed(2),
+//         currency: 'ETB',
+//         email,
+//         tx_ref: txRef,
+//         callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/chapa/callback`,
+//         return_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment-status?tx_ref=${txRef}`,
+//       });
+
+//       if (paymentResponse.status !== 'success') {
+//         console.error('Payment initiation failed:', paymentResponse);
+//         return res.status(500).json({
+//           error: paymentResponse.message || 'Payment initiation failed. Please try again later.',
+//         });
+//       }
+
+//       await prisma.userSubscription.create({
+//         data: {
+//           userId: userIdInt,
+//           planId: planId,
+//           transactionId: txRef,
+//           startDate: now,
+//           endDate: endDate,
+//           isActive: false, 
+//         },
+//       });
+
+//       return res.status(200).json({
+//         checkoutUrl: paymentResponse.data?.checkout_url,
+//       });
+//     }
+
+//     return res.status(400).json({ error: 'No valid subscription found for the user.' });
+//   } catch (error) {
+//     console.error('Error processing payment:', error);
+//     return res.status(500).json({
+//       error: 'An error occurred while processing the payment. Please try again later.',
+//     });
+//   }
+// };
+
+// export default handler;
+
+
+// import { NextApiRequest, NextApiResponse } from 'next';
+// import prisma from '../../../lib/prisma';
+// import { Chapa } from 'chapa-nodejs';
+
+// const chapa = new Chapa({
+//   secretKey: process.env.CHAPA_SECRET_KEY || '',
+// });
+
+// const generateTransactionReference = (): string =>
+//   `tx_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+
+// const calculateEndDate = (
+//   validity: 'Weekly' | 'Monthly' | 'Yearly' | 'Other' | null,
+//   freeTrial: boolean,
+//   trialDuration: string | null
+// ): Date => {
+//   const startDate = new Date();
+
+//   if (freeTrial && trialDuration) {
+//     const trialDurationInDays = parseInt(trialDuration, 10);
+//     if (isNaN(trialDurationInDays)) {
+//       throw new Error('Invalid trial duration');
+//     }
+//     startDate.setDate(startDate.getDate() + trialDurationInDays);
+//     return startDate;
+//   }
+
+//   switch (validity || 'Other') {
+//     case 'Weekly':
+//       startDate.setDate(startDate.getDate() + 7);
+//       break;
+//     case 'Monthly':
+//       startDate.setMonth(startDate.getMonth() + 1);
+//       break;
+//     case 'Yearly':
+//       startDate.setFullYear(startDate.getFullYear() + 1);
+//       break;
+//   }
+
+//   return startDate;
+// };
+
+// const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+//   if (req.method !== 'POST') {
+//     res.setHeader('Allow', ['POST']);
+//     return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+//   }
+
+//   const { amount, email, userId, planId } = req.body;
+
+//   if (!amount || isNaN(parseFloat(amount)) || !email || !userId || !planId) {
+//     return res.status(400).json({ error: 'Invalid or missing input fields' });
+//   }
+
+//   try {
+//     const userIdInt = parseInt(userId, 10);
+//     const now = new Date();
+
+//     // Fetch the subscription plan details
+//     const subscriptionPlan = await prisma.subscriptionPlan.findUnique({
+//       where: { id: planId },
+//     });
+
+//     if (!subscriptionPlan) {
+//       return res.status(400).json({ error: `Plan with ID ${planId} does not exist.` });
+//     }
+
+//     // Check if a subscription already exists for the user
+//     const activeSubscription = await prisma.userSubscription.findFirst({
+//       where: { userId: userIdInt, isActive: true },
+//       orderBy: { endDate: 'desc' },
+//     });
+
+//     // If no active subscription exists, create a new one
+//     if (!activeSubscription) {
+//       const recentSubscription = await prisma.userSubscription.findFirst({
+//         where: { userId: userIdInt },
+//         orderBy: { endDate: 'desc' },
+//       });
+
+//       const txRef = generateTransactionReference();
+
+//       // Calculate the subscription end date
+//       const endDate = calculateEndDate(
+//         subscriptionPlan.validity,
+//         subscriptionPlan.freeTrial,
+//         subscriptionPlan.trialDuration
+//       );
+
+//       // If the user has no subscription record, create a new one
+//       if (!recentSubscription) {
+//         const paymentResponse = await chapa.initialize({
+//           amount: parseFloat(amount).toFixed(2),
+//           currency: 'ETB',
+//           email,
+//           tx_ref: txRef,
+//           callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/chapa/callback`,
+//           return_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment-status?tx_ref=${txRef}`,
+//         });
+
+//         if (paymentResponse.status !== 'success') {
+//           console.error('Payment initiation failed:', paymentResponse);
+//           return res.status(500).json({
+//             error: paymentResponse.message || 'Payment initiation failed. Please try again later.',
+//           });
+//         }
+
+//         // Create a new subscription record
+//         await prisma.userSubscription.create({
+//           data: {
+//             userId: userIdInt,
+//             planId,
+//             transactionId: txRef,
+//             startDate: now,
+//             endDate,
+//             isActive: false, // Will activate after payment confirmation
+//           },
+//         });
+
+//         return res.status(200).json({ checkoutUrl: paymentResponse.data?.checkout_url });
+//       }
+//     }
+
+//     return res.status(400).json({ error: 'User already has an active subscription.' });
+//   } catch (error) {
+//     console.error('Error processing subscription:', error);
+//     return res.status(500).json({
+//       error: 'An error occurred while processing the subscription. Please try again later.',
+//     });
+//   }
+// };
+
 // export default handler;
 
 
@@ -777,21 +1119,34 @@ const chapa = new Chapa({
 const generateTransactionReference = (): string =>
   `tx_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
 
-const calculateEndDate = (duration: 'DAILY' | 'MONTHLY' | 'YEARLY'): Date => {
+const calculateEndDate = (
+  validity: 'Weekly' | 'Monthly' | 'Yearly' | 'Other' | null,
+  freeTrial: boolean,
+  trialDuration: string | null
+): Date => {
   const startDate = new Date();
-  switch (duration) {
-    case 'DAILY':
-      startDate.setDate(startDate.getDate() + 1);
+
+  if (freeTrial && trialDuration) {
+    const trialDurationInDays = parseInt(trialDuration, 10);
+    if (isNaN(trialDurationInDays)) {
+      throw new Error('Invalid trial duration');
+    }
+    startDate.setDate(startDate.getDate() + trialDurationInDays);
+    return startDate;
+  }
+
+  switch (validity || 'Other') {
+    case 'Weekly':
+      startDate.setDate(startDate.getDate() + 7);
       break;
-    case 'MONTHLY':
+    case 'Monthly':
       startDate.setMonth(startDate.getMonth() + 1);
       break;
-    case 'YEARLY':
+    case 'Yearly':
       startDate.setFullYear(startDate.getFullYear() + 1);
       break;
-    default:
-      throw new Error('Invalid subscription duration');
   }
+
   return startDate;
 };
 
@@ -803,148 +1158,122 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { amount, email, userId, planId } = req.body;
 
-  // Validate input fields
-  if (!amount || isNaN(parseFloat(amount))) {
-    return res.status(400).json({ error: 'Invalid or missing amount' });
-  }
-
-  if (!email || !userId || !planId) {
-    return res.status(400).json({ error: 'Missing required fields: email, userId, or planId' });
+  if (!amount || isNaN(parseFloat(amount)) || !email || !userId || !planId) {
+    return res.status(400).json({ error: 'Invalid or missing input fields' });
   }
 
   try {
     const userIdInt = parseInt(userId, 10);
     const now = new Date();
 
-    // Check if the user already has an active subscription
-    const activeSubscription = await prisma.userSubscription.findFirst({
-      where: { userId: userIdInt, isActive: true },
-      orderBy: { endDate: 'desc' }, // Fetch the most recent active subscription
+    // Fetch the subscription plan details
+    const subscriptionPlan = await prisma.subscriptionPlan.findUnique({
+      where: { id: planId },
     });
 
-    if (activeSubscription) {
-      // If the user has an active subscription, return an error
-      return res.status(400).json({ error: 'User already has an active subscription.' });
+    if (!subscriptionPlan) {
+      return res.status(400).json({ error: `Plan with ID ${planId} does not exist.` });
     }
 
-    // If there's no active subscription, check for a recent (inactive) subscription
-    const recentSubscription = await prisma.userSubscription.findFirst({
+    // Fetch the user's subscription
+    const userSubscription = await prisma.userSubscription.findFirst({
       where: { userId: userIdInt },
-      orderBy: { endDate: 'desc' }, // Fetch the most recent subscription
+      orderBy: { endDate: 'desc' },
     });
 
-    // If the user has no subscription records, create a new one
-    if (!recentSubscription) {
-      const subscriptionPlan = await prisma.subscriptionPlan.findUnique({
-        where: { id: planId },
-      });
+    // Handle the case where the user has a subscription record
+    if (userSubscription) {
+      if (userSubscription.isActive) {
+        // If the user already has an active subscription, deny creating a new one
+        return res.status(400).json({ error: 'User already has an active subscription.' });
+      } else {
+        // If the subscription is inactive, allow them to proceed with payment
+        const txRef = generateTransactionReference();
 
-      if (!subscriptionPlan) {
-        return res.status(400).json({
-          error: `Plan with ID ${planId} does not exist.`,
+        const paymentResponse = await chapa.initialize({
+          amount: parseFloat(amount).toFixed(2),
+          currency: 'ETB',
+          email,
+          tx_ref: txRef,
+          callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/chapa/callback`,
+          return_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment-status?tx_ref=${txRef}`,
         });
-      }
 
-      const txRef = generateTransactionReference();
+        if (paymentResponse.status !== 'success') {
+          console.error('Payment initiation failed:', paymentResponse);
+          return res.status(500).json({
+            error: paymentResponse.message || 'Payment initiation failed. Please try again later.',
+          });
+        }
 
-      const paymentResponse = await chapa.initialize({
-        amount: parseFloat(amount).toFixed(2),
-        currency: 'ETB',
-        email,
-        tx_ref: txRef,
-        callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/chapa/callback`,
-        return_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment-status?tx_ref=${txRef}`,
-      });
+        // Calculate the new subscription end date
+        const endDate = calculateEndDate(
+          subscriptionPlan.validity,
+          subscriptionPlan.freeTrial,
+          subscriptionPlan.trialDuration
+        );
 
-      if (paymentResponse.status !== 'success') {
-        console.error('Payment initiation failed:', paymentResponse);
-        return res.status(500).json({
-          error: paymentResponse.message || 'Payment initiation failed. Please try again later.',
-        });
-      }
-
-      // Create a new subscription for the user without any previous subscription
-      await prisma.userSubscription.create({
-        data: {
-          userId: userIdInt,
-          planId: planId,
-          transactionId: txRef,
-          startDate: now,
-          endDate: calculateEndDate(subscriptionPlan.duration),
-          isActive: false, // Mark as inactive until payment is confirmed
-        },
-      });
-
-      return res.status(200).json({
-        checkoutUrl: paymentResponse.data?.checkout_url,
-      });
-    }
-
-    // If there's an inactive subscription, deactivate it and create a new one
-    if (recentSubscription && !recentSubscription.isActive) {
-      // Deactivate the old subscription if it is within the valid period
-      if (recentSubscription.endDate > now) {
-        await prisma.userSubscription.update({
-          where: { id: recentSubscription.id },
+        // Create a new subscription record
+        await prisma.userSubscription.create({
           data: {
-            isActive: false,
+            userId: userIdInt,
+            planId,
+            transactionId: txRef,
+            startDate: now,
+            endDate,
+            Goesto:true,
+            isActive: false, // Will activate after payment confirmation
           },
         });
+
+        return res.status(200).json({ checkoutUrl: paymentResponse.data?.checkout_url });
       }
+    }
 
-      const subscriptionPlan = await prisma.subscriptionPlan.findUnique({
-        where: { id: planId },
-      });
+    // If no subscription record exists, create a new one
+    const txRef = generateTransactionReference();
 
-      if (!subscriptionPlan) {
-        return res.status(400).json({
-          error: `Plan with ID ${planId} does not exist.`,
-        });
-      }
+    const paymentResponse = await chapa.initialize({
+      amount: parseFloat(amount).toFixed(2),
+      currency: 'ETB',
+      email,
+      tx_ref: txRef,
+      callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/chapa/callback`,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment-status?tx_ref=${txRef}`,
+    });
 
-      const txRef = generateTransactionReference();
-
-      const paymentResponse = await chapa.initialize({
-        amount: parseFloat(amount).toFixed(2),
-        currency: 'ETB',
-        email,
-        tx_ref: txRef,
-        callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/chapa/callback`,
-        return_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment-status?tx_ref=${txRef}`,
-      });
-
-      if (paymentResponse.status !== 'success') {
-        console.error('Payment initiation failed:', paymentResponse);
-        return res.status(500).json({
-          error: paymentResponse.message || 'Payment initiation failed. Please try again later.',
-        });
-      }
-
-      // Create a new subscription entry for this user (inactive until payment confirmed)
-      await prisma.userSubscription.create({
-        data: {
-          userId: userIdInt,
-          planId: planId,
-          transactionId: txRef,
-          startDate: now,
-          endDate: calculateEndDate(subscriptionPlan.duration),
-          isActive: false, // Mark as inactive until payment is confirmed
-        },
-      });
-
-      return res.status(200).json({
-        checkoutUrl: paymentResponse.data?.checkout_url,
+    if (paymentResponse.status !== 'success') {
+      console.error('Payment initiation failed:', paymentResponse);
+      return res.status(500).json({
+        error: paymentResponse.message || 'Payment initiation failed. Please try again later.',
       });
     }
 
-    return res.status(400).json({ error: 'No valid subscription found for the user.' });
+    const endDate = calculateEndDate(
+      subscriptionPlan.validity,
+      subscriptionPlan.freeTrial,
+      subscriptionPlan.trialDuration
+    );
+
+    await prisma.userSubscription.create({
+      data: {
+        userId: userIdInt,
+        planId,
+        transactionId: txRef,
+        startDate: now,
+        endDate,
+        Goesto:true,
+        isActive: false, // Will activate after payment confirmation
+      },
+    });
+
+    return res.status(200).json({ checkoutUrl: paymentResponse.data?.checkout_url });
   } catch (error) {
-    console.error('Error processing payment:', error);
+    console.error('Error processing subscription:', error);
     return res.status(500).json({
-      error: 'An error occurred while processing the payment. Please try again later.',
+      error: 'An error occurred while processing the subscription. Please try again later.',
     });
   }
 };
 
 export default handler;
-

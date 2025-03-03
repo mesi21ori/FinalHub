@@ -1,6 +1,6 @@
+
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import React, { useState } from "react";
-
 
 interface InputFieldProps {
   id: string;
@@ -8,15 +8,17 @@ interface InputFieldProps {
   type: string; // Either "text", "password", or "textarea"
   label: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange:  (value: string) => void;
   onBlur?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>; // Optional onBlur
   placeholder?: string;
   error?: string;
   className?: string; // Custom class name for styling
   readOnly?: boolean; // Whether the field is read-only
   required?: boolean; // Optional required prop to determine if field is required
+  disabled?: boolean; // Add disabled prop
+  
 }
-
+ 
 const InputField: React.FC<InputFieldProps> = ({
   id,
   name,
@@ -28,18 +30,20 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder,
   error,
   className,
+  
   readOnly = false,
   required = false, // Default to false if not provided
+  disabled = false, // Default to false if not provided
 }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   // Determine the input type based on visibility toggle for password
   const inputType = type === "password" && isPasswordVisible ? "text" : type;
 
-  // Handle value change only if not read-only
+  // Handle value change only if not read-only and not disabled
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (!readOnly) {
-      onChange(e.target.value); // Update only if not read-only
+    if (!readOnly && !disabled) {
+      onChange(e.target.value); // Update only if not read-only and not disabled
     }
   };
 
@@ -59,9 +63,10 @@ const InputField: React.FC<InputFieldProps> = ({
             onBlur={onBlur}
             placeholder={placeholder}
             readOnly={readOnly}
+            disabled={disabled} // Apply disabled prop
             className={`mt-1 block w-full max-w-xl p-2 bg-transparent border rounded-md text-[#3C2A21] focus:outline-none focus:ring focus:ring-[#3C2A21] ${
               error ? "border-red-600" : "border-[#3C2A21]"
-            } ${readOnly ? "bg-gray-100 cursor-not-allowed" : ""} ${className}`}
+            } ${readOnly ? "bg-gray-100 cursor-not-allowed" : ""} ${disabled ? "bg-gray-200 cursor-not-allowed" : ""} ${className}`}
           />
         ) : (
           <input
@@ -73,13 +78,14 @@ const InputField: React.FC<InputFieldProps> = ({
             onBlur={onBlur}
             placeholder={placeholder}
             readOnly={readOnly}
+            disabled={disabled} // Apply disabled prop
             className={`mt-1 block w-full max-w-xl p-2 bg-transparent border rounded-md text-[#3C2A21] focus:outline-none focus:ring focus:ring-[#3C2A21] ${
               error ? "border-red-600" : "border-[#3C2A21]"
-            } ${readOnly ? "bg-gray-100 cursor-not-allowed" : ""} ${className}`}
+            } ${readOnly ? "bg-gray-100 cursor-not-allowed" : ""} ${disabled ? "bg-gray-200 cursor-not-allowed" : ""} ${className}`}
           />
         )}
         {/* Password visibility toggle for password fields */}
-        {type === "password" && !readOnly && (
+        {type === "password" && !readOnly && !disabled && (
           <button
             type="button"
             onClick={() => setIsPasswordVisible(!isPasswordVisible)}

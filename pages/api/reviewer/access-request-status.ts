@@ -1,33 +1,32 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '../../../lib/prisma';
 
-export default async function getRequestStatus(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method === 'GET') {
-        const { userId, contentId } = req.query;
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { userId, contentId } = req.query;
 
-        if (!userId || !contentId) {
-            return res.status(400).json({ error: 'User ID and content ID are required' });
-        }
+  if (!userId || !contentId) {
+    return res.status(400).json({ error: 'User ID and Content ID are required' });
+  }
 
-        try {
-            // Check if the user has requested access for this content
-            const accessRequest = await prisma.accessRequest.findFirst({
-                where: {
-                    userId: parseInt(userId as string, 10),
-                    contentId: parseInt(contentId as string, 10),
-                },
-            });
+  try {
+    // Check if there is an access request for the user on the given content
+    const accessRequest = await prisma.accessRequest.findFirst({
+      where: {
+        userId: parseInt(userId as string),
+        contentId: parseInt(contentId as string),
+      },
+    });
 
-            if (!accessRequest) {
-                return res.status(404).json({ error: 'No access request found for this content' });
-            }
-
-            res.status(200).json({ status: accessRequest.status });
-        } catch (error) {
-            console.error('Error fetching access request status:', error);
-            res.status(500).json({ error: 'Failed to fetch access request status' });
-        }
-    } else {
-        res.status(405).json({ error: 'Method not allowed' });
+    if (!accessRequest) {
+      return res.status(404).json({ error: 'No access request found' });
     }
-}
+
+    // Return the status of the access request
+    return res.status(200).json({ status: accessRequest.status });
+  } catch (error) {
+    console.error("Error checking access request:", error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export default handler;

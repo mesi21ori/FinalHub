@@ -111,7 +111,7 @@ handler.post(async (req: NextApiRequest & { file: Express.Multer.File }, res: Ne
       },
     });
 
-    return res.status(201).json(user);
+    return res.status(201).json({ userId: user.id });
   } catch (error) {
     console.error('Error saving user to database:', error);
     return res.status(500).json({ message: 'Internal server error' });

@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/router'; // for navigation
-import '../src/app/globals.css'; 
-import Layout from '../components/PadminMenu'; // Ensure this points to the correct Layout component
+import '../src/app/globals.css';  // Ensure this points to the correct Layout component
 
 const LogoutButton: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -18,14 +17,14 @@ const LogoutButton: React.FC = () => {
       });
 
       // After logout, redirect to the sign-in page or home page
-      router.push('/signin');
+      router.push('/auth/signin');
     } catch (error) {
       console.error('Failed to log out:', error);
     }
   };
 
   return (
-    <Layout isEditMode={isEditMode} setIsEditMode={setIsEditMode}>
+   
       <div className="flex flex-col h-screen bg-[#E5E5CB] p-6">
         <div className="flex-grow"> {/* Use flex-grow to fill the space without scrolling */}
           <button
@@ -37,7 +36,7 @@ const LogoutButton: React.FC = () => {
           </button>
         </div>
       </div>
-    </Layout>
+
   );
 };
 
