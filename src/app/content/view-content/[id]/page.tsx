@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Layout from "../../layout";
-import CommentPage from "../../../../../components/Comment";  
+import Layout from "../../layout"; 
 import Footer from "../../../../../components/Footer";
 import LogoNavBar from "../../../../../components/LogoNavBar";
 import Image from "next/image";
@@ -261,10 +260,11 @@ const ViewContent = () => {
         </button>
       </div>
 
-      {/* Comment Section */}
+      {/* Comment Section 
       {showComments && content && (
         <CommentPage contentId={content.id} />
       )}
+      */}
     </div>
     <Footer />
   </div>
