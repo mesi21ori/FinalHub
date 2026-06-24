@@ -1,61 +1,80 @@
+// prisma/seed.mjs
 
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
+import dotenv from "dotenv";
 
-
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
-import dotenv from 'dotenv';
-
-dotenv.config(); // Load environment variables
+dotenv.config();
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const adminPassword = process.env.ADMIN_PASSWORD || 'default-secure-password'; // Use environment variable for password
+  const adminPassword = process.env.ADMIN_PASSWORD;
 
-  // Delete the existing Platform Admin user with ID 1
-  await prisma.user.deleteMany({
-    where: {
-      id: 1,
-    },
-  });
-
-  // Create the Platform Admin user
-  const platformAdmin = await prisma.user.create({
-    data: {
-      email: 'shumetmeseret7@gmail.com', // Correct email format
-      username: 'platform_admin',
-      password: await bcrypt.hash(adminPassword, 10), // Hash password
-      role: 'PLATFORM_ADMIN',
-      isPlatformAdmin: true,
-      isActive: true,
-    },
-  });
-
-  console.log('Platform Admin user has been created:', platformAdmin);
-
-  // Insert preferences into the Preference table
-  const preferences = [
-    "Wars", "Politics", "Religion", "Culture", 
-    "Famine & Crisis", "Civil Rights", "Economy", 
-    "Diplomacy", "Leadership", "Ethnic Movements"
-  ];
-
-  // Insert each preference into the Preference table
-  for (const preference of preferences) {
-    await prisma.preference.create({
-      data: {
-        name: preference,
-      },
-    });
+  if (!adminPassword) {
+    throw new Error("ADMIN_PASSWORD is missing in environment variables");
   }
 
-  console.log('Preferences inserted successfully');
+  const hashedPassword = await bcrypt.hash(adminPassword, 10);
+
+  const platformAdmin = await prisma.user.upsert({
+    where: {
+      email: "shumetmeseret7@gmail.com"
+    },
+    update: {
+      username: "platform_admin",
+      password: hashedPassword,
+      role: "PLATFORM_ADMIN",
+      isPlatformAdmin: true,
+      isActive: true
+    },
+    create: {
+      email: "shumetmeseret7@gmail.com",
+      username: "platform_admin",
+      password: hashedPassword,
+      role: "PLATFORM_ADMIN",
+      isPlatformAdmin: true,
+      isActive: true
+    }
+  });
+
+  console.log("Platform Admin ready:", platformAdmin.email);
+
+  const preferences = [
+    "Wars",
+    "Politics",
+    "Religion",
+    "Culture",
+    "Famine & Crisis",
+    "Civil Rights",
+    "Economy",
+    "Diplomacy",
+    "Leadership",
+    "Ethnic Movements"
+  ];
+
+  for (const preference of preferences) {
+    const existingPreference = await prisma.preference.findFirst({
+      where: {
+        name: preference
+      }
+    });
+
+    if (!existingPreference) {
+      await prisma.preference.create({
+        data: {
+          name: preference
+        }
+      });
+    }
+  }
+
+  console.log("Preferences ready");
 }
 
-// Run the main function and handle errors
 main()
-  .catch(async (e) => {
-    console.error(e);
+  .catch(async (error) => {
+    console.error("Seed error:", error);
     await prisma.$disconnect();
     process.exit(1);
   })
