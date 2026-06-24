@@ -1,15 +1,20 @@
-// //my-nextjs-prisma-project\next.config.mjs
-// /** @type {import('next').NextConfig} */
-// const nextConfig = {};
-
-// export default nextConfig;
-
+// my-nextjs-prisma-project/next.config.mjs
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true, // Helps with debugging and catching potential issues
+  reactStrictMode: true,
+
   images: {
-    domains: ['localhost'], // Add the domain of the image source (e.g., 'localhost')
+    domains: ['localhost'],
+  },
+
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      canvas: false,
+    };
+
+    return config;
   },
 };
 

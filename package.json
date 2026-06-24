@@ -14,7 +14,10 @@
     "seed": "ts-node --esm -r tsconfig-paths/register prisma/seed.mjs"
   },
   "dependencies": {
-    "@fortawesome/free-solid-svg-icons": "^6.7.1",
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^7.2.0",
+    "@fortawesome/free-regular-svg-icons": "^7.2.0",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.10.0",
@@ -26,6 +29,7 @@
     "bcryptjs": "^2.4.3",
     "chapa": "^1.0.5",
     "chapa-nodejs": "^2.0.1",
+    "chart.js": "^4.5.1",
     "clsx": "^2.1.1",
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.5",

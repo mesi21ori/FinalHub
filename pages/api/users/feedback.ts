@@ -1,4 +1,5 @@
-// pages/api/feedback.ts
+// pages/api/users/feedback.ts
+
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 
@@ -9,25 +10,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  const { content, userId } = req.body;
+  const { content, userId, rating } = req.body;
 
-  // Validate the input data
-  if (!content || !userId) {
-    return res.status(400).json({ message: 'Content and userId are required' });
+  if (!content || !userId || rating === undefined) {
+    return res.status(400).json({
+      message: 'Content, userId, and rating are required',
+    });
   }
 
   try {
-    // Create a new feedback entry
     const feedback = await prisma.feedback.create({
       data: {
         content,
-        userId,
+        rating: Number(rating),
+
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
       },
     });
 
-    res.status(201).json({ message: 'Feedback submitted successfully', feedback });
+    return res.status(201).json({
+      message: 'Feedback submitted successfully',
+      feedback,
+    });
   } catch (error) {
     console.error('Error saving feedback:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: 'Internal server error' });
   }
 }

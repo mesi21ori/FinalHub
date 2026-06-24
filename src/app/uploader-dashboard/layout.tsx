@@ -5,7 +5,7 @@ import {
   FiHome,
   FiFilm,
   FiMusic,
-  FiBook, 
+  FiBook,
   FiCamera,
   FiEdit,
   FiSettings,
@@ -33,7 +33,12 @@ const UploaderDashboardLayout = ({ children }: { children: ReactNode }) => {
   const toggleSubMenu = (label: string | null) => {
     setActiveSubMenu(activeSubMenu === label ? null : label);
   };
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
 
+    window.location.href = "/login";
+  };
   const toggleSidebar = () => {
     setIsSidebarExpanded(!isSidebarExpanded);
   };
@@ -49,9 +54,8 @@ const UploaderDashboardLayout = ({ children }: { children: ReactNode }) => {
       <div className="flex flex-1">
         {/* Sidebar */}
         <div
-          className={`fixed left-0 top-12 h-screen ${
-            isSidebarExpanded ? "w-64" : "w-20"
-          } transition-all custom-scrollbar`}
+          className={`fixed left-0 top-12 h-screen ${isSidebarExpanded ? "w-64" : "w-20"
+            } transition-all custom-scrollbar`}
         >
           <div className="h-full overflow-y-auto">
             <Sidebar
@@ -60,16 +64,16 @@ const UploaderDashboardLayout = ({ children }: { children: ReactNode }) => {
               onSubMenuToggle={toggleSubMenu}
               isExpanded={isSidebarExpanded}
               onToggleSidebar={toggleSidebar}
+              onLogoutClick={handleLogout}
             />
           </div>
         </div>
 
         {/* Main Content */}
         <div
-          className={`flex-1 ${
-            isSidebarExpanded ? "ml-64" : "ml-20"
-          } transition-all bg-[#f7f4f0] p-6 overflow-y-auto`}
-          
+          className={`flex-1 ${isSidebarExpanded ? "ml-64" : "ml-20"
+            } transition-all bg-[#f7f4f0] p-6 overflow-y-auto`}
+
         >
           {children}
         </div>
